@@ -10,16 +10,16 @@ public sealed class AACSheetlet<T> : Sheetlet<T> where T : PalettedStylesheet
 {
     private static readonly (string StyleClass, Color Department)[] SubjectButtonColors =
     [
-        ("CommandButton", Color.FromHex("#1b67a5")),
-        ("EngineeringButton", Color.FromHex("#f37700")),
-        ("EpistemicsButton", Color.FromHex("#8b308f")), // Science
-        ("JusticeButton", Color.FromHex("#326500")), // Law
-        ("LogisticsButton", Color.FromHex("#b18644")), // Cargo
-        ("MedicalButton", Color.FromHex("#417da2")),
-        ("SecurityButton", Color.FromHex("#830000")),
-        ("ServiceButton", Color.FromHex("#639137")),
-        ("CentralCommandButton", Color.FromHex("#0a5704")),
-        ("NanotrasenButton", Color.FromHex("#0d304d")),
+        ("CommandButton", Color.FromHex("#fcdf03")),
+        ("EngineeringButton", Color.FromHex("#ff733c")),
+        ("EpistemicsButton", Color.FromHex("#cd7ccd")), // Science
+        ("JusticeButton", Color.FromHex("#396901")), // Law
+        ("LogisticsButton", Color.FromHex("#b48b57")), // Cargo
+        ("MedicalButton", Color.FromHex("#57b8f0")),
+        ("SecurityButton", Color.FromHex("#ff4242")),
+        ("ServiceButton", Color.FromHex("#539c00")),
+        ("CentralCommandButton", Color.FromHex("#00b700")),
+        ("NanotrasenButton", Color.FromHex("#2253b5")),
     ];
 
     public override StyleRule[] GetRules(T sheet, object config)
