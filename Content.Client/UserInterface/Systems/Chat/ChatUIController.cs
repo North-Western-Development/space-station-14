@@ -923,10 +923,15 @@ public sealed partial class ChatUIController : UIController
         }
 
         // Color any words chosen by the client.
+        // Sol-start: detect keyword highlight matches for the highlight chime
+        var wrappedBeforeHighlights = msg.WrappedMessage;
         foreach (var highlight in _highlights)
         {
             msg.WrappedMessage = SharedChatSystem.InjectTagAroundString(msg, highlight, "color", _highlightsColor);
         }
+        if (msg.WrappedMessage != wrappedBeforeHighlights)
+            msg.ClientHighlighted = true;
+        // Sol-end
 
         // Color any codewords for minds that have roles that use them
         if (_player.LocalUser != null && _mindSystem != null && _roleCodewordSystem != null)
