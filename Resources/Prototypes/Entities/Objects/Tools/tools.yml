@@ -368,6 +368,7 @@
     - ReinforcedWindow
     - Airlock
     - AirlockGlass
+    - Windoor
     - Firelock
     - TubeLight
     - BulbLight
