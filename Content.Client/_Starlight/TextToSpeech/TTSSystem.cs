@@ -189,25 +189,25 @@ public sealed partial class TextToSpeechSystem : EntitySystem
         var audioParams = AudioParams.Default.WithVolume(volume);
         var entity = GetEntity(ev.SourceUid);
 
-        if (!_speakerQueueEnabled || !entity.IsValid())
+        if (!_speakerQueueEnabled || entity is not { } sourceUid || !sourceUid.IsValid())
         {
-            StartSpeakerPlayback(ev.Data, ev.Chime, audioParams, entity);
+            StartSpeakerPlayback(ev.Data, ev.Chime, audioParams, entity ?? EntityUid.Invalid);
             return;
         }
 
-        if (IsSpeakerBusy(entity))
+        if (IsSpeakerBusy(sourceUid))
         {
-            if (!_speakerQueues.TryGetValue(entity, out var queue))
+            if (!_speakerQueues.TryGetValue(sourceUid, out var queue))
             {
                 queue = new Queue<SpeakerQueuedTts>();
-                _speakerQueues[entity] = queue;
+                _speakerQueues[sourceUid] = queue;
             }
 
-            queue.Enqueue(new SpeakerQueuedTts(ev.Data, !_chime.IsMuted ? ev.Chime : null, audioParams, entity));
+            queue.Enqueue(new SpeakerQueuedTts(ev.Data, !_chime.IsMuted ? ev.Chime : null, audioParams, sourceUid));
             return;
         }
 
-        StartSpeakerPlayback(ev.Data, !_chime.IsMuted ? ev.Chime : null, audioParams, entity);
+        StartSpeakerPlayback(ev.Data, !_chime.IsMuted ? ev.Chime : null, audioParams, sourceUid);
     }
 
     private bool IsSpeakerBusy(EntityUid sourceUid)
