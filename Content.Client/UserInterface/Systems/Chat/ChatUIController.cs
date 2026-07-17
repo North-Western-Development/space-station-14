@@ -191,8 +191,8 @@ public sealed partial class ChatUIController : UIController
         _sawmill.Level = LogLevel.Info;
         _admin.AdminStatusUpdated += UpdateChannelPermissions;
         _manager.PermissionsUpdated += UpdateChannelPermissions;
-        _player.LocalPlayerAttached += OnAttachedChanged;
-        _player.LocalPlayerDetached += OnAttachedChanged;
+        _player.LocalPlayerAttached += OnPlayerAttached;
+        _player.LocalPlayerDetached += OnPlayerDetached;
         _state.OnStateChanged += StateChanged;
         _net.RegisterNetMessage<MsgChatMessage>(OnChatMessage);
         _net.RegisterNetMessage<MsgDeleteChatMessagesBy>(OnDeleteChatMessagesBy);
@@ -455,11 +455,18 @@ public sealed partial class ChatUIController : UIController
         _speechBubbleRoot.SetPositionLast();
     }
 
-    private void OnAttachedChanged(EntityUid uid)
+    private void OnPlayerAttached(EntityUid uid)
     {
         UpdateChannelPermissions();
 
+        // Only refresh highlights on attach. Doing so on detach races CharacterInfo against
+        // entity deletion / reconnect (EntityUid.Invalid → MetaDataComponent KeyNotFoundException).
         UpdateAutoFillHighlights();
+    }
+
+    private void OnPlayerDetached(EntityUid uid)
+    {
+        UpdateChannelPermissions();
     }
 
     private void AddSpeechBubble(ChatMessage msg, SpeechBubble.SpeechType speechType)
