@@ -1,7 +1,7 @@
 - type: gameMap
   id: SolReach
   mapName: 'Reach'
-  mapPath: /Maps/_SolTeam/Stations/SolReach.yml
+  mapPath: /Maps/_Sol/Stations/Reach.yml
   minPlayers: 0
   maxPlayers: 15
   stations:
