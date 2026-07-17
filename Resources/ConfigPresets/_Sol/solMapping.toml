@@ -1,6 +1,6 @@
 # Sol mapping server — use with: config.presets=_Sol/sol,_Sol/solMapping
 [server]
-rules_file = SolRuleset
+rules_file = "SolRuleset"
 
 [nulllink.id]
 server = mapping
