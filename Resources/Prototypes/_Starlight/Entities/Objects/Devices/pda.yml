@@ -16,6 +16,17 @@
     accentVColor: "#d33725"
   - type: Icon
     state: pda-roboticist
+  # Sol-start: Silicon-only analyzer via MachineTek instead of unrestricted MedTek.
+  - type: CartridgeLoader
+    uiKey: enum.PdaUiKey.Key
+    preinstalled:
+      - CrewManifestCartridge
+      - NotekeeperCartridge
+      - NanoTaskCartridge
+      - NewsReaderCartridge
+      - MachineTekCartridge
+      - NanoChatCartridge # CD
+  # Sol-end
 
 - type: entity
   parent: BaseMedicalPDA
