@@ -3,8 +3,8 @@
 rules_file = "SolRuleset"
 
 [nulllink.id]
-server = mapping
+server = "mapping"
 
 [nulllink.roles_req]
-admin_builder = SolMapping
-title_builder = Sol
+admin_builder = "SolMapping"
+title_builder = "Sol"
