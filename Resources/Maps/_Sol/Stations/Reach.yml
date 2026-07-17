@@ -11317,14 +11317,6 @@ entities:
       rot: 3.141592653589793 rad
       pos: -0.5,33.5
       parent: 2
-- proto: CompuerShuttleSalvage
-  entities:
-  - uid: 3858
-    components:
-    - type: Transform
-      rot: 1.5707963267948966 rad
-      pos: -19.5,4.5
-      parent: 2
 - proto: ComputerAlert
   entities:
   - uid: 1621
@@ -27121,5 +27113,13 @@ entities:
     components:
     - type: Transform
       pos: 1.3831761,-7.253863
+      parent: 2
+- proto: CompuerShuttleSalvage
+  entities:
+  - uid: 3861
+    components:
+    - type: Transform
+      rot: 1.5707963267948966 rad
+      pos: -20.5,2.5
       parent: 2
 ...
