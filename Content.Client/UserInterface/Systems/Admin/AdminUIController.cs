@@ -80,7 +80,11 @@ public sealed partial class AdminUIController : UIController,
     public void OnSystemUnloaded(AdminSystem system)
     {
         if (_window != null)
-            _window.Dispose();
+        {
+            _window.Teardown();
+            _window.Close();
+            _window.Orphan();
+        }
 
         _admin.AdminStatusUpdated -= AdminStatusUpdated;
 
@@ -89,11 +93,8 @@ public sealed partial class AdminUIController : UIController,
 
     private void EnsureWindow()
     {
-        if (_window is { Disposed: false })
+        if (_window != null)
             return;
-
-        if (_window?.Disposed ?? false)
-            OnWindowDisposed();
 
         _window = UIManager.CreateWindow<AdminMenuWindow>();
         LayoutContainer.SetAnchorPreset(_window, LayoutContainer.LayoutPreset.Center);
@@ -105,7 +106,7 @@ public sealed partial class AdminUIController : UIController,
         _window.ObjectsTabControl.OnEntryKeyBindDown += ObjectsTabEntryKeyBindDown;
         _window.OnOpen += OnWindowOpen;
         _window.OnClose += OnWindowClosed;
-        _window.OnDisposed += OnWindowDisposed;
+        _window.OnTeardown += OnWindowTornDown;
     }
 
     public void UnloadButton()
@@ -138,7 +139,7 @@ public sealed partial class AdminUIController : UIController,
         AdminButton?.SetClickPressed(false);
     }
 
-    private void OnWindowDisposed()
+    private void OnWindowTornDown()
     {
         if (AdminButton != null)
             AdminButton.Pressed = false;
@@ -150,7 +151,7 @@ public sealed partial class AdminUIController : UIController,
         _window.ObjectsTabControl.OnEntryKeyBindDown -= ObjectsTabEntryKeyBindDown;
         _window.OnOpen -= OnWindowOpen;
         _window.OnClose -= OnWindowClosed;
-        _window.OnDisposed -= OnWindowDisposed;
+        _window.OnTeardown -= OnWindowTornDown;
         _window = null;
     }
 

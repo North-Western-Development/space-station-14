@@ -111,7 +111,7 @@ public sealed partial class ProfilePreviewSpriteView
                     EntMan,
                     _prototypeManager);
             }
-            catch (UnknownPrototypeException e)
+            catch (UnknownPrototypeException)
             {
                 loadout = new RoleLoadout();
             }

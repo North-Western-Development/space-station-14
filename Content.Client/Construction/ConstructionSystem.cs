@@ -390,7 +390,7 @@ namespace Content.Client.Construction
         {
             // Count ghosts at the given location and allow up to the maximum allowed per tile
             var ghostCount = _ghosts.Values.Count(ghost =>
-                EntityManager.GetComponent<TransformComponent>(ghost).Coordinates.Equals(loc));
+                Comp<TransformComponent>(ghost).Coordinates.Equals(loc));
 
             return ghostCount >= _configurationManager.GetCVar(StarlightCCVars.ConstructionMaxGhostsPerTile);
         }
