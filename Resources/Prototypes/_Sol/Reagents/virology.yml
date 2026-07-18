@@ -1,0 +1,75 @@
+- type: reagent
+  id: SolAntiviral
+  name: reagent-name-sol-antiviral
+  desc: reagent-desc-sol-antiviral
+  physicalDesc: reagent-physical-desc-opaque
+  color: "#66ccff"
+  metabolisms:
+    Medicine:
+      effects:
+      - !type:HealthChange
+        damage:
+          types:
+            Poison: -1
+
+- type: reagent
+  id: SolAntipyretic
+  name: reagent-name-sol-antipyretic
+  desc: reagent-desc-sol-antipyretic
+  physicalDesc: reagent-physical-desc-opaque
+  color: "#88aaff"
+  metabolisms:
+    Medicine:
+      effects:
+      - !type:AdjustTemperature
+        amount: -50000
+
+- type: reagent
+  id: SolSterilizine
+  name: reagent-name-sol-sterilizine
+  desc: reagent-desc-sol-sterilizine
+  physicalDesc: reagent-physical-desc-strong-smelling
+  color: "#ddeeff"
+
+- type: reagent
+  id: SolAntihistamine
+  name: reagent-name-sol-antihistamine
+  desc: reagent-desc-sol-antihistamine
+  physicalDesc: reagent-physical-desc-powdery
+  color: "#ccffcc"
+  metabolisms:
+    Medicine:
+      effects:
+      - !type:HealthChange
+        damage:
+          types:
+            Poison: -0.5
+
+- type: reagent
+  id: SolEpinephrineAllergy
+  name: reagent-name-sol-epinephrine-allergy
+  desc: reagent-desc-sol-epinephrine-allergy
+  physicalDesc: reagent-physical-desc-opaque
+  color: "#ffdddd"
+  metabolisms:
+    Medicine:
+      effects:
+      - !type:HealthChange
+        damage:
+          types:
+            Asphyxiation: -2
+            Poison: -1
+
+- type: reagent
+  id: SolCultureNutrient
+  name: reagent-name-sol-culture-nutrient
+  desc: reagent-desc-sol-culture-nutrient
+  physicalDesc: reagent-physical-desc-opaque
+  color: "#c8a26a"
+
+- type: reagent
+  id: SolCultureStabilizer
+  name: reagent-name-sol-culture-stabilizer
+  desc: reagent-desc-sol-culture-stabilizer
+  physicalDesc: reagent-physical-desc-opaque
+  color: "#88ccaa"

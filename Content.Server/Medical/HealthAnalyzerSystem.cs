@@ -258,7 +258,10 @@ public sealed partial class HealthAnalyzerSystem : EntitySystem
             || !HasComp<DamageableComponent>(target))
             return;
 
-        var uiState = GetHealthAnalyzerUiState(target);
+        // Sol-start: debug analyzers request verbose pathogen/immunity state.
+        var debug = HasComp<Content.Shared._Sol.Medical.Virology.Components.DebugHealthAnalyzerComponent>(healthAnalyzer);
+        var uiState = GetHealthAnalyzerUiState(target, debug);
+        // Sol-end
         // Starlight-start: Printable health reports.
         uiState.CanPrint = TryComp<HealthAnalyzerComponent>(healthAnalyzer, out var analyzerComp)
             && analyzerComp.ScannedEntity == target
@@ -345,7 +348,7 @@ public sealed partial class HealthAnalyzerSystem : EntitySystem
         }
         // Starlight end
 
-        return new HealthAnalyzerUiState(
+        var state = new HealthAnalyzerUiState(
             GetNetEntity(entity),
             bodyTemperature,
             bloodAmount,
@@ -355,7 +358,29 @@ public sealed partial class HealthAnalyzerSystem : EntitySystem
             unrevivable,
             metabolizingReagents // Starlight - add metabolizing chemicals to ui message
         );
+
+        // Sol-start: organ panel (clinical) via Sol fill event
+        var fill = new Content.Shared._Sol.Medical.Virology.Events.HealthAnalyzerVirologyFillEvent(entity, state, false);
+        RaiseLocalEvent(ref fill);
+        return fill.State;
+        // Sol-end
     }
+
+    // Sol-start: allow debug analyzers to request verbose state.
+    public HealthAnalyzerUiState GetHealthAnalyzerUiState(EntityUid? target, bool debug)
+    {
+        if (!debug)
+            return GetHealthAnalyzerUiState(target);
+
+        var state = GetHealthAnalyzerUiState(target);
+        if (!target.HasValue)
+            return state;
+
+        var fill = new Content.Shared._Sol.Medical.Virology.Events.HealthAnalyzerVirologyFillEvent(target.Value, state, true);
+        RaiseLocalEvent(ref fill);
+        return fill.State;
+    }
+    // Sol-end
 
     // Starlight-start: Printable health reports.
     private void PrintPatientReport(Entity<HealthAnalyzerComponent> analyzer, EntityUid user, EntityUid patient)

@@ -51,6 +51,10 @@ public sealed partial class HealthAnalyzerControl : BoxContainer
         _cache = dependencies.Resolve<IResourceCache>();
 
         PrintReportButton.OnPressed += _ => PrintReportPressed?.Invoke(); // Starlight-edit: Printable health reports.
+        // Sol-start: clinical details are split into dedicated right-column tabs.
+        DiagnosticTabs.SetTabTitle(0, Loc.GetString("sol-health-analyzer-damage-tab"));
+        DiagnosticTabs.SetTabTitle(1, Loc.GetString("sol-health-analyzer-organs-tab"));
+        // Sol-end
     }
 
     public void Populate(HealthAnalyzerUiState state)
@@ -63,10 +67,12 @@ public sealed partial class HealthAnalyzerControl : BoxContainer
             || !_entityManager.TryGetComponent<DamageableComponent>(target, out var damageable))
         {
             NoPatientDataText.Visible = true;
+            PatientDataContainer.Visible = false;
             return;
         }
 
         NoPatientDataText.Visible = false;
+        PatientDataContainer.Visible = true;
         PrintReportButton.Disabled = !PrintReportButton.Visible || !(state.ScanMode ?? false) || !(state.CanPrint ?? false); // Starlight-edit: Printable health reports.
         // Scan Mode
 
@@ -155,7 +161,127 @@ public sealed partial class HealthAnalyzerControl : BoxContainer
         DrawMetabolizingChemicals(state.MetabolizingReagents); // Metabolizing Chemicals Section
         // Starlight end
         DrawDiagnosticGroups(sortedGroups, damagePerType);
+
+        // Sol-start: organ status + debug analyzer lines
+        DrawSolOrganStatus(state.Organs);
+        DrawSolDebugLines(state.DebugLines);
+        // Sol-end
     }
+
+    // Sol-start
+    private void DrawSolOrganStatus(List<(NetEntity OrganEntity, string OrganName, string Status)>? organs)
+    {
+        OrgansContainer.RemoveAllChildren();
+
+        if (organs == null || organs.Count == 0)
+        {
+            OrgansContainer.AddChild(new Label
+            {
+                Text = Loc.GetString("sol-health-analyzer-no-organs"),
+                HorizontalAlignment = HAlignment.Center,
+            });
+            return;
+        }
+
+        var grid = new GridContainer
+        {
+            Columns = 2,
+        };
+
+        foreach (var (organNetEntity, name, status) in organs.OrderBy(organ => organ.OrganName))
+        {
+            var card = new PanelContainer
+            {
+                Margin = new Thickness(2),
+                MinWidth = 165,
+                PanelOverride = new StyleBoxFlat
+                {
+                    BorderColor = Color.Gray,
+                    BorderThickness = new Thickness(1),
+                    ContentMarginLeftOverride = 5,
+                    ContentMarginRightOverride = 5,
+                    ContentMarginTopOverride = 5,
+                    ContentMarginBottomOverride = 5,
+                },
+            };
+
+            var row = new BoxContainer
+            {
+                Orientation = LayoutOrientation.Horizontal,
+            };
+
+            var organView = new SpriteView
+            {
+                SetSize = new Vector2(36, 36),
+                OverrideDirection = Direction.South,
+                RectClipContent = true,
+                Margin = new Thickness(0, 0, 6, 0),
+            };
+            if (_entityManager.TryGetEntity(organNetEntity, out var organEntity))
+                organView.SetEntity(organEntity.Value);
+
+            var labels = new BoxContainer
+            {
+                Orientation = LayoutOrientation.Vertical,
+                VerticalAlignment = VAlignment.Center,
+                HorizontalExpand = true,
+            };
+            labels.AddChild(new Label
+            {
+                Text = name,
+                HorizontalExpand = true,
+            });
+            labels.AddChild(new Label
+            {
+                Text = status,
+                StyleClasses = { "LabelSubText" },
+                FontColorOverride = GetOrganStatusColor(status),
+            });
+
+            row.AddChild(organView);
+            row.AddChild(labels);
+            card.AddChild(row);
+            grid.AddChild(card);
+        }
+
+        OrgansContainer.AddChild(grid);
+    }
+
+    private void DrawSolDebugLines(List<string>? lines)
+    {
+        SolDebugContainer.RemoveAllChildren();
+        SolDebugContainer.Visible = lines is { Count: > 0 };
+
+        if (lines == null || lines.Count == 0)
+            return;
+
+        SolDebugContainer.AddChild(new Label
+        {
+            Text = Loc.GetString("sol-health-analyzer-debug-header"),
+            FontColorOverride = Color.Orange,
+        });
+        foreach (var line in lines)
+        {
+            SolDebugContainer.AddChild(new Label
+            {
+                Text = line,
+                FontColorOverride = Color.Gray,
+            });
+        }
+    }
+
+    private static Color GetOrganStatusColor(string status)
+    {
+        return status switch
+        {
+            "Healthy" => Color.Green,
+            "Damaged" => Color.Yellow,
+            "Failing" => Color.Orange,
+            "Critical" => Color.Red,
+            _ => Color.White,
+        };
+    }
+    // Sol-end
     // Starlight-start: Draw Damage Groups in a two column grid in their own boxes.
     private void DrawDiagnosticGroups(
         Dictionary<string, FixedPoint2> groups,

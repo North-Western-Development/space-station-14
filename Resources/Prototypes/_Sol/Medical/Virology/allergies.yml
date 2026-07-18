@@ -1,0 +1,18 @@
+- type: allergy
+  id: SolAllergyPeanut
+  name: sol-allergy-peanut-name
+  description: sol-allergy-peanut-desc
+  triggerFoods:
+  - FoodPeanutButterIceCream
+  defaultSeverity: Severe
+  causesSneezing: true
+  causesAnaphylaxis: true
+
+- type: allergy
+  id: SolAllergyLatex
+  name: sol-allergy-latex-name
+  description: sol-allergy-latex-desc
+  triggerReagents:
+  - Latex
+  defaultSeverity: Mild
+  causesSneezing: true
