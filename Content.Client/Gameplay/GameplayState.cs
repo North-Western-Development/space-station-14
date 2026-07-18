@@ -83,8 +83,7 @@ namespace Content.Client.Gameplay
             base.Shutdown();
             // Clear viewport to some fallback, whatever.
             _eyeManager.MainViewport = UserInterfaceManager.MainViewport;
-            if (!_fpsCounter.Disposed)
-                _fpsCounter.Orphan();
+            _fpsCounter.Dispose();
             _uiManager.ClearWindows();
             _configurationManager.UnsubValueChanged(CCVars.UILayout, ReloadMainScreenValueChange);
             UnloadMainScreen();

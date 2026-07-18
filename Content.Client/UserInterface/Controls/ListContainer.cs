@@ -118,7 +118,7 @@ public class ListContainer : Control
         // Ensure buttons are re-generated.
         foreach (var button in _buttons.Values)
         {
-            button.Orphan();
+            button.Dispose();
         }
         _buttons.Clear();
 
@@ -307,7 +307,7 @@ public class ListContainer : Control
             foreach (var (data, button) in toRemove)
             {
                 _buttons.Remove(data);
-                button.Orphan();
+                button.Dispose();
             }
 
             _vScrollBar.SetPositionLast();

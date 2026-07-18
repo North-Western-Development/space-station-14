@@ -58,8 +58,7 @@ namespace Content.Client.MainMenu
             _client.RunLevelChanged -= RunLevelChanged;
             _netManager.ConnectFailed -= _onConnectFailed;
 
-            if (!_mainMenuControl.Disposed)
-                _mainMenuControl.Orphan();
+            _mainMenuControl.Dispose();
         }
 
         private void ChangelogButtonPressed(BaseButton.ButtonEventArgs args)

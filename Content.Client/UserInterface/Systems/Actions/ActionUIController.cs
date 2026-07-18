@@ -373,7 +373,7 @@ public sealed partial class ActionUIController : UIController, IOnStateChanged<G
 
         for (; i < existing.Count; i++)
         {
-            existing[i].Orphan();
+            existing[i].Dispose();
         }
     }
 
@@ -652,7 +652,7 @@ public sealed partial class ActionUIController : UIController, IOnStateChanged<G
             _window.SearchBar.OnTextChanged -= OnSearchChanged;
             _window.FilterButton.OnItemSelected -= OnFilterSelected;
 
-            _window.Close();
+            _window.Dispose();
             _window = null;
         }
     }

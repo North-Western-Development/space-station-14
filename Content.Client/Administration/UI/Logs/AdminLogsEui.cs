@@ -199,12 +199,8 @@ public sealed partial class AdminLogsEui : BaseEui
         base.Closed();
 
         LogsWindow?.DisposePopOut(); // Starlight: close the popout if it exists
-        if (LogsControl is { Disposed: false })
-            LogsControl.Orphan();
-        if (LogsWindow is { Disposed: false } window)
-        {
-            window.Close();
-        }
+        LogsControl.Dispose();
+        LogsWindow?.Dispose();
         LogsWindow = null;
     }
 }

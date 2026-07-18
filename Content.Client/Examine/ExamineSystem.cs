@@ -377,7 +377,7 @@ namespace Content.Client.Examine
             var vbox = _examineTooltipOpen?.GetChild(0).GetChild(0);
             if (vbox == null)
             {
-                buttonsHBox.Orphan();
+                buttonsHBox.Dispose();
                 return;
             }
 
@@ -447,7 +447,7 @@ namespace Content.Client.Examine
                         button.OnPressed -= VerbButtonPressed;
                     }
                 }
-                _examineTooltipOpen.Orphan();
+                _examineTooltipOpen.Dispose();
                 _examineTooltipOpen = null;
             }
 

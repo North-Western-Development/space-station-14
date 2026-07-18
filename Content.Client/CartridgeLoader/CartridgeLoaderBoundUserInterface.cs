@@ -60,7 +60,7 @@ public abstract class CartridgeLoaderBoundUserInterface : BoundUserInterface
         }
 
         _activeCartridgeUI = ui;
-        _activeUiFragment?.Orphan();
+        _activeUiFragment?.Dispose();
         _activeUiFragment = control;
     }
 
@@ -124,6 +124,7 @@ public abstract class CartridgeLoaderBoundUserInterface : BoundUserInterface
         if (disposing && _activeUiFragment is not null)
         {
             DetachCartridgeUI(_activeUiFragment);
+            _activeUiFragment.Dispose();
             _activeUiFragment = null;
         }
     }

@@ -38,8 +38,7 @@ public sealed partial class BanListEui : BaseEui
         if (_popup != null)
         {
             _popup.Close();
-            if (!_popup.Disposed)
-                _popup.Orphan();
+            _popup.Dispose();
             _popup = null;
         }
 

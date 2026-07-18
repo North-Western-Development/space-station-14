@@ -75,8 +75,7 @@ namespace Content.Client.Launcher
 
         protected override void Shutdown()
         {
-            if (_control is { Disposed: false })
-                _control.Orphan();
+            _control?.Dispose();
 
             _clientNetManager.ConnectFailed -= OnConnectFailed;
             _clientNetManager.ClientConnectStateChanged -= OnConnectStateChanged;

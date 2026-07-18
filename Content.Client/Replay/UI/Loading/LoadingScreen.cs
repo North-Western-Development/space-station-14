@@ -38,8 +38,7 @@ public partial class LoadingScreen<TResult> : State
 
     protected override void Shutdown()
     {
-        if (!_screen.Disposed)
-            _screen.Orphan();
+        _screen.Dispose();
     }
 
     public void UpdateProgress(float value, float maxValue, string header, string subtext = "")
