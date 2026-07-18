@@ -30,8 +30,6 @@ using Robust.Shared.Prototypes;
 using Robust.Shared.Utility;
 
 // Starlight-start
-using YamlDotNet.RepresentationModel;
-using Robust.Shared.Map.Events;
 using Robust.Packaging.AssetProcessing;
 using Content.Shared.Mobs;
 // Starlight-end

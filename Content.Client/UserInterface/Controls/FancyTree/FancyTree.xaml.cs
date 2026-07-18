@@ -233,7 +233,7 @@ public sealed partial class FancyTree : Control
     {
         foreach (var item in Items)
         {
-            item.Dispose();
+            Body.RemoveChild(item);
         }
 
         Items.Clear();

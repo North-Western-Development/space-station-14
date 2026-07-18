@@ -229,7 +229,7 @@ public sealed partial class AHelpUIController: UIController, IOnSystemChanged<Bw
         }
 
         helper.Control.Orphan();
-        helper.Window.Dispose();
+        helper.Window.Close();
         helper.Window = null;
         helper.EverOpened = false;
 
@@ -389,7 +389,7 @@ public sealed class AdminAHelpUIHandler : IAHelpUIHandler
                 {
                     panel.Orphan();
                 }
-                Control?.Dispose();
+                Control?.Orphan();
             }
             // window wont be closed here so we will invoke ourselves
             OnClose?.Invoke();
@@ -490,7 +490,7 @@ public sealed class AdminAHelpUIHandler : IAHelpUIHandler
 
     public void Dispose()
     {
-        Window?.Dispose();
+        Window?.Close();
         Window = null;
         Control = null;
         _activePanelMap.Clear();
@@ -592,7 +592,7 @@ public sealed class UserAHelpUIHandler : IAHelpUIHandler
 
     public void Dispose()
     {
-        _window?.Dispose();
+        _window?.Close();
         _window = null;
         _chatPanel = null;
     }

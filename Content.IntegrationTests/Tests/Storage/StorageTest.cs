@@ -57,6 +57,8 @@ public sealed class StorageTest : GameTest
         });
     }
 
+    // StorageFillComponent is obsolete but still present in prototypes until Dec 2026; keep validating it.
+#pragma warning disable CS0618
     [Test]
     public async Task TestStorageFillPrototypes()
     {
@@ -265,4 +267,5 @@ public sealed class StorageTest : GameTest
             }
         });
     }
+#pragma warning restore CS0618
 }

@@ -19,7 +19,7 @@ internal sealed class SLWindow : DefaultWindow
     internal SLWindow()
     {
         _stylesheetManager = IoCManager.Resolve<IStylesheetManager>();
-        Stylesheet = _stylesheetManager.Starlight;
+        Stylesheet = _stylesheetManager.SheetSystem;
         CloseButton.Stylesheet = Stylesheet;
         CloseButton.AddStyleClass("CrossButtonRed");
     }
