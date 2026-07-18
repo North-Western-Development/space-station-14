@@ -24,7 +24,6 @@ public sealed partial class AmbientOcclusionOverlay : Overlay
     [Dependency] private IClyde _clyde = default!;
     [Dependency] private IConfigurationManager _cfgManager = default!;
     [Dependency] private IEntityManager _entManager = default!;
-    [Dependency] private IMapManager _mapManager = default!;
     [Dependency] private IPrototypeManager _proto = default!;
 
     public override OverlaySpace Space => OverlaySpace.WorldSpaceBelowEntities;
@@ -117,7 +116,7 @@ public sealed partial class AmbientOcclusionOverlay : Overlay
                 worldHandle.UseShader(_proto.Index(UnshadedShader).Instance());
 
                 var grids = new List<Entity<MapGridComponent>>();
-                _mapManager.FindGridsIntersecting(mapId, worldBounds, ref grids);
+                maps.FindGridsIntersecting(mapId, worldBounds, ref grids);
                 foreach (var grid in grids)
                 {
                     var transform = xformSystem.GetWorldMatrix(grid.Owner);

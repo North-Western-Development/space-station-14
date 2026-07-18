@@ -537,15 +537,15 @@ public sealed partial class ChatUIController : UIController
 
     public void RemoveSpeechBubble(EntityUid entityUid, SpeechBubble bubble)
     {
-        _speechBubbleRoot.RemoveChild(bubble);
+        bubble.Dispose();
 
-        var list = _activeSpeechBubbles[entityUid];
+        if (!_activeSpeechBubbles.TryGetValue(entityUid, out var list))
+            return;
+
         list.Remove(bubble);
 
         if (list.Count == 0)
-        {
             _activeSpeechBubbles.Remove(entityUid);
-        }
     }
 
     private void UpdateChannelPermissions()

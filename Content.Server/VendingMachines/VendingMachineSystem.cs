@@ -350,7 +350,7 @@ namespace Content.Server.VendingMachines
                     }
 
                     if (PrototypeManager.TryIndex<EntityPrototype>(entry.ID, out var proto) &&
-                        proto.TryGetComponent<ItemPriceComponent>(out var priceComponent, _componentFactory))
+                        proto.TryComp<ItemPriceComponent>(out var priceComponent, _componentFactory))
                     {
                         var categoryPrice = _itemPriceManager.GetPriceForPrototype(entry.ID, priceComponent.PriceCategory);
                         entry.Price = categoryPrice ?? priceComponent.FallbackPrice;
@@ -494,7 +494,7 @@ namespace Content.Server.VendingMachines
             if (!isEmagged && component.ShowPrices && entry.Price <= 0)
             {
                 if (PrototypeManager.TryIndex<EntityPrototype>(itemId, out var proto) &&
-                    proto.TryGetComponent<ItemPriceComponent>(out var priceComponent, _componentFactory))
+                    proto.TryComp<ItemPriceComponent>(out var priceComponent, _componentFactory))
                 {
                     var categoryPrice = _itemPriceManager.GetPriceForPrototype(itemId, priceComponent.PriceCategory);
                     entry.Price = categoryPrice ?? priceComponent.FallbackPrice;

@@ -36,8 +36,9 @@ public sealed class LanguageMenuUIController : UIController, IOnStateEntered<Gam
 
     public void OnStateExited(GameplayState state)
     {
+        // GameplayState.Shutdown already ClearWindows() (Dispose); Close is a no-op if disposed/unparented.
+        // Do not Orphan — that asserts when ClearWindows already disposed the control.
         LanguageWindow?.Close();
-        LanguageWindow?.Orphan();
         LanguageWindow = null;
 
         CommandBinds.Unregister<LanguageMenuUIController>();

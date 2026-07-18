@@ -263,10 +263,9 @@ public sealed partial class AdminNotesControl : Control
         Inputs.Clear();
         NewNoteButton.OnPressed -= OnNewNoteButtonPressed;
 
-        if (_popup != null)
-        {
-            UserInterfaceManager.PopupRoot.RemoveChild(_popup);
-        }
+        if (_popup is { Disposed: false })
+            _popup.Orphan();
+        _popup = null;
 
         NoteDeleted = null;
     }

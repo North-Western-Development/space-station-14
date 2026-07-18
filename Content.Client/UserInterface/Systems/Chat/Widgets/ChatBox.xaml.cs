@@ -62,6 +62,12 @@ public partial class ChatBox : UIWidget
         _controller.MessageAdded += OnMessageAdded;
         _controller.HighlightsUpdated += OnHighlightsUpdated;
         _controller.RegisterChat(this);
+
+        // Construction-time channel selection may have run before we subscribed; sync label/selection.
+        if (SelectedChannel == ChatSelectChannel.None)
+            SafelySelectChannel(_controller.GetPreferredChannel());
+        else
+            _controller.UpdateSelectedChannel(this);
     }
 
     protected override void ExitedTree()

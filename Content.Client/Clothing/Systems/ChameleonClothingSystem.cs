@@ -38,7 +38,7 @@ public sealed partial class ChameleonClothingSystem : SharedChameleonClothingSys
     {
         base.UpdateSprite(uid, proto);
         if (TryComp(uid, out SpriteComponent? sprite)
-            && proto.TryGetComponent(out SpriteComponent? _, Factory))
+            && proto.TryComp(out SpriteComponent? _, Factory))
         {
             // Prototype components have no Owner; spawn a temporary copy to CopySprite from.
             var spriteEntity = Spawn(proto.ID, MapCoordinates.Nullspace);
@@ -49,7 +49,7 @@ public sealed partial class ChameleonClothingSystem : SharedChameleonClothingSys
 
         // Edgecase for PDAs to include visuals when UI is open
         if (TryComp(uid, out PdaBorderColorComponent? borderColor)
-            && proto.TryGetComponent(out PdaBorderColorComponent? otherBorderColor, Factory))
+            && proto.TryComp(out PdaBorderColorComponent? otherBorderColor, Factory))
         {
             borderColor.BorderColor = otherBorderColor.BorderColor;
             borderColor.AccentHColor = otherBorderColor.AccentHColor;

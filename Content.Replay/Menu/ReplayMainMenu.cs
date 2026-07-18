@@ -277,7 +277,8 @@ public sealed partial class ReplayMainScreen : State
 
     protected override void Shutdown()
     {
-        _userInterfaceManager.StateRoot.RemoveChild(_mainMenuControl);
+        if (!_mainMenuControl.Disposed)
+            _mainMenuControl.Orphan();
         _selectWindow?.Close();
         _selectWindow = null;
     }

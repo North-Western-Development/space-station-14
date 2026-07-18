@@ -79,11 +79,13 @@ public sealed partial class AdminUIController : UIController,
 
     public void OnSystemUnloaded(AdminSystem system)
     {
-        if (_window != null)
+        if (_window is { } window)
         {
-            _window.Teardown();
-            _window.Close();
-            _window.Orphan();
+            // Teardown invokes OnWindowTornDown, which nulls _window — keep a local ref.
+            window.Teardown();
+            // ClearWindows may already have disposed CreateWindow instances on state exit.
+            if (!window.Disposed)
+                window.Close();
         }
 
         _admin.AdminStatusUpdated -= AdminStatusUpdated;

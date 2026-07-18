@@ -373,7 +373,7 @@ public sealed partial class ActionUIController : UIController, IOnStateChanged<G
 
         for (; i < existing.Count; i++)
         {
-            _window.ResultsGrid.RemoveChild(existing[i]);
+            existing[i].Orphan();
         }
     }
 

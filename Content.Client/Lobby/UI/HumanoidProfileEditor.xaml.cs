@@ -1053,7 +1053,8 @@ namespace Content.Client.Lobby.UI
         public void RefreshLoadouts()
         {
             _loadoutWindow?.Close();
-            _loadoutWindow?.Orphan();
+            if (_loadoutWindow is { Disposed: false })
+                _loadoutWindow.Orphan();
             _loadoutWindow = null;
         }
 
@@ -1361,7 +1362,8 @@ namespace Content.Client.Lobby.UI
         private void OpenLoadout(JobPrototype? jobProto, RoleLoadout roleLoadout, RoleLoadoutPrototype roleLoadoutProto)
         {
             _loadoutWindow?.Close();
-            _loadoutWindow?.Orphan();
+            if (_loadoutWindow is { Disposed: false })
+                _loadoutWindow.Orphan();
             _loadoutWindow = null;
             var collection = IoCManager.Instance;
 
@@ -1422,7 +1424,8 @@ namespace Content.Client.Lobby.UI
         private void OpenAntagLoadout(AntagPrototype antagProto, RoleLoadout roleLoadout, RoleLoadoutPrototype roleLoadoutProto)
         {
             _loadoutWindow?.Close();
-            _loadoutWindow?.Orphan();
+            if (_loadoutWindow is { Disposed: false })
+                _loadoutWindow.Orphan();
             _loadoutWindow = null;
             var collection = IoCManager.Instance;
 
@@ -1596,7 +1599,8 @@ namespace Content.Client.Lobby.UI
             base.ExitedTree();
 
             _loadoutWindow?.Close();
-            _loadoutWindow?.Orphan();
+            if (_loadoutWindow is { Disposed: false })
+                _loadoutWindow.Orphan();
             _loadoutWindow = null;
         }
 

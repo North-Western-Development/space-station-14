@@ -447,7 +447,7 @@ namespace Content.Client.Examine
                         button.OnPressed -= VerbButtonPressed;
                     }
                 }
-                _userInterfaceManager.ModalRoot.RemoveChild(_examineTooltipOpen);
+                _examineTooltipOpen.Orphan();
                 _examineTooltipOpen = null;
             }
 

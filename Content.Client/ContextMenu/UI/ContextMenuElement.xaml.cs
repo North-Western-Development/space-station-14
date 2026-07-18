@@ -60,7 +60,8 @@ namespace Content.Client.ContextMenu.UI
             base.ExitedTree();
 
             _subMenu?.Close();
-            _subMenu?.Orphan();
+            if (_subMenu is { Disposed: false })
+                _subMenu.Orphan();
             _subMenu = null;
             ParentMenu = null;
         }

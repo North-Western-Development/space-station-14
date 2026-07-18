@@ -42,7 +42,8 @@ public abstract class ItemSlotUIContainer<T> : GridContainer, IItemslotUIContain
     {
         foreach (var button in Buttons.Values)
         {
-            RemoveChild(button);
+            // Buttons may have been reparented; Orphan is safe when not a direct child.
+            button.Orphan();
         }
 
         Buttons.Clear();
@@ -123,7 +124,7 @@ public abstract class ItemSlotUIContainer<T> : GridContainer, IItemslotUIContain
     public virtual void RemoveButton(T button)
     {
         RemoveButtonFromDict(button);
-        RemoveChild(button);
+        button.Orphan();
     }
 
     public virtual T? GetButton(string slotName)

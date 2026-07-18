@@ -24,7 +24,6 @@ public sealed partial class LoadMapRuleSystem : StationEventSystem<LoadMapRuleCo
     [Dependency] private MapLoaderSystem _mapLoader = default!;
     #region Starlight
     [Dependency] private IConfigurationManager _cfg = default!;
-    [Dependency] private IMapManager _maps = default!;
     [Dependency] private TagSystem _tag = default!;
     [Dependency] private EntityManager _entMan = default!;
     [Dependency] private DynamicRuleSystem _dynamicRule = default!;
@@ -142,7 +141,7 @@ public sealed partial class LoadMapRuleSystem : StationEventSystem<LoadMapRuleCo
                 {
                     mapId = mapcomp.MapId;
 
-                    var gridSet = _maps.GetAllGrids(mapcomp.MapId).ToList();
+                    var gridSet = _map.GetAllGrids(mapcomp.MapId).ToList();
                     grids = gridSet.Select(x => x.Owner).ToList();
 
                     var ev = new RuleLoadedGridsEvent(mapId, grids);

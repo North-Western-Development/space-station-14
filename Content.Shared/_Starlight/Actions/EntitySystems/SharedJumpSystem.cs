@@ -20,7 +20,7 @@ public abstract partial class SharedJumpSystem : EntitySystem
     [Dependency] private SharedActionsSystem _action = default!;
     [Dependency] private ThrowingSystem _throwing = default!;
     [Dependency] private SharedTransformSystem _transform = default!;
-    [Dependency] private IMapManager _mapMan = default!;
+    [Dependency] private SharedMapSystem _map = default!;
     [Dependency] private SharedAudioSystem _audio = default!;
     [Dependency] private ActionContainerSystem _actionContainer = default!;
     [Dependency] private SharedStunSystem _stun = default!;
@@ -103,7 +103,7 @@ public abstract partial class SharedJumpSystem : EntitySystem
         var userTransform = Transform(target);
         var userMapCoords = _transform.GetMapCoordinates(userTransform);
 
-        if (args.FromGrid && !_mapMan.TryFindGridAt(userMapCoords, out _, out _)) return;
+        if (args.FromGrid && !_map.TryFindGridAt(userMapCoords, out _, out _)) return;
 
         TryJump(performer, targetCoords, args, target, 15f, args.ToPointer, args.Sound, args.Distance);
     }
