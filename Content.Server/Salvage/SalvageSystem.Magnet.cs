@@ -1,4 +1,3 @@
-using System.Linq;
 using System.Numerics;
 using System.Threading.Tasks;
 using Content.Server.Salvage.Magnet;
@@ -440,7 +439,15 @@ public sealed partial class SalvageSystem
 
             // This doesn't stop it from spawning on top of random things in space
             // Might be better like this, ghosts could stop it before
-            if (_mapManager.FindGridsIntersecting(finalCoords.MapId, box2Rot).Any())
+            var intersects = false;
+            _mapManager.FindGridsIntersecting(finalCoords.MapId, box2Rot, ref intersects,
+                static (_, _, ref state) =>
+                {
+                    state = true;
+                    return false;
+                }, approx: false, includeMap: true);
+
+            if (intersects)
             {
                 // Bump it further and further just in case.
                 fraction += 0.1f;

@@ -261,7 +261,7 @@ public sealed partial class PolymorphSystem : EntitySystem
                 || !EntityManager.TryGetComponent(uid, reg.Idx, out var comp))
                 continue;
 
-            EntityManager.CopyComponent(uid, child, comp);
+            CopyComp(uid, child, comp);
         }
 
         // Startlight - end

@@ -222,7 +222,7 @@ public sealed partial class RailroadRuleSystem : GameRuleSystem<RailroadRuleComp
                     ruleEnt.Comp.PoolByObjective.Add(objectivePrototype, [(card.Owner, card.Comp, ruleOwner)]);
             }
             else if (TryComp<ObjectiveComponent>(card.Owner, out var objective)
-                    && TryComp<MetaDataComponent>(card.Owner, out var meta)
+                    && TryComp(card.Owner, out MetaDataComponent? meta)
                     && meta.EntityPrototype is { } objectiveEntityPrototype)
             {
                 var objectiveProtoId = new EntProtoId<ObjectiveComponent>(objectiveEntityPrototype.ID);
@@ -345,7 +345,7 @@ public sealed partial class RailroadRuleSystem : GameRuleSystem<RailroadRuleComp
                 if (!TryComp<ObjectiveComponent>(objectiveUid, out var objectiveComp))
                     continue;
 
-                if (TryComp<MetaDataComponent>(objectiveUid, out var meta)
+                if (TryComp(objectiveUid, out MetaDataComponent? meta)
                     && meta.EntityPrototype is { } objectiveEntityPrototype)
                 {
                     var objectiveProtoId = new EntProtoId<ObjectiveComponent>(objectiveEntityPrototype.ID);

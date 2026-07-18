@@ -520,7 +520,7 @@ public sealed partial class ShuttleSystem
                 {
                     foreach (var grid in stationData.Grids)
                     {
-                        if (!TryComp<TransformComponent>(grid, out var gridXform))
+                        if (!TryComp(grid, out TransformComponent? gridXform))
                             continue;
 
                         if (gridXform.MapUid is not { } stationMap || !Exists(stationMap))

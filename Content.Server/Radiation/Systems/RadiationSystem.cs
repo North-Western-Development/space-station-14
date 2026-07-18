@@ -113,7 +113,9 @@ public sealed partial class RadiationSystem : EntitySystem
     /// <param name="timeoutSeconds">How long this request remains active if not refreshed (default 5s)</param>
     public void RequestTileRadiationSampling(EntityCoordinates coordinates, float timeoutSeconds = 5f)
     {
-        var gridUid = coordinates.GetGridUid(EntityManager);
+        var gridUid = coordinates.IsValid(EntityManager)
+            ? _transform.GetGrid(coordinates)
+            : null;
         if (gridUid == null || !_gridQuery.TryGetComponent(gridUid.Value, out var gridComp))
             return;
 

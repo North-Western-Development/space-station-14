@@ -77,6 +77,7 @@ public abstract partial class SharedGunSystem : EntitySystem
     [Dependency] protected TagSystem TagSystem = default!;
     [Dependency] protected ThrowingSystem ThrowingSystem = default!;
     [Dependency] private ScreenshakeSystem _shake = default!; // Starlight | ES Screenshake
+    [Dependency] private SharedDualWieldSystem _dualWield = default!; // Starlight
 
     /// <summary>
     /// Default projectile speed

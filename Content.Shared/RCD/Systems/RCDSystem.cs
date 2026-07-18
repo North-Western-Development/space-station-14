@@ -837,7 +837,7 @@ public sealed partial class RCDSystem : EntitySystem
                 }
 
                 var entityCoords = _mapSystem.GridTileToLocal(gridUid, mapGrid, position);
-                var mapCoords = new MapCoordinates(entityCoords.ToMapPos(EntityManager, _transform), entityCoords.GetMapId(EntityManager));
+                var mapCoords = _transform.ToMapCoordinates(entityCoords);
 
                 var ent = Spawn(proto, mapCoords, rotation: rotation);
                 // Starlight edit End: RPD/RPLD

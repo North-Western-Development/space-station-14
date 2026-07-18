@@ -66,27 +66,22 @@ public abstract partial class InteractionTest
     {
         Assert.That(ProtoMan.Index<ConstructionPrototype>(prototype).Type, Is.EqualTo(ConstructionType.Item));
 
-        // Please someone purge async construction code
-        Task<bool> task = default!;
+        var started = false;
         await Server.WaitPost(() =>
         {
-            task = SConstruction.TryStartItemConstruction(prototype, SEntMan.GetEntity(Player));
+            started = SConstruction.TryStartItemConstruction(prototype, SEntMan.GetEntity(Player));
         });
 
-        Task? tickTask = null;
-        while (!task.IsCompleted)
+        // Start failure is immediate; success waits for the DoAfter to finish.
+        if (!shouldSucceed)
         {
-            tickTask = Pair.RunTicksSync(1);
-            await Task.WhenAny(task, tickTask);
+            Assert.That(started, Is.False);
+            await RunTicks(5);
+            return;
         }
 
-        if (tickTask != null)
-            await tickTask;
-
-#pragma warning disable RA0004
-        Assert.That(task.Result, Is.EqualTo(shouldSucceed));
-#pragma warning restore RA0004
-
+        Assert.That(started, Is.True);
+        await AwaitDoAfters();
         await RunTicks(5);
     }
 

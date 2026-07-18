@@ -258,7 +258,7 @@ public sealed partial class GunSystem : SharedGunSystem
         // Starlight start - cartridges can hold hitscans
         if (HasComp<HitscanAmmoComponent>(uid))
         {
-            var coordinates = EntityManager.GetComponent<TransformComponent>(uid).Coordinates; // Starlight-edit
+            var coordinates = Comp<TransformComponent>(uid).Coordinates; // Starlight-edit
             var hitscanEv = new HitscanTraceEvent
             {
                 FromCoordinates = coordinates,
