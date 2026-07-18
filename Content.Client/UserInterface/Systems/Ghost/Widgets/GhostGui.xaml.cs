@@ -68,6 +68,7 @@ public sealed partial class GhostGui : UIWidget
         base.ExitedTree();
 
         TargetWindow.Close();
-        TargetWindow.Dispose();
+        if (!TargetWindow.Disposed)
+            TargetWindow.Orphan();
     }
 }

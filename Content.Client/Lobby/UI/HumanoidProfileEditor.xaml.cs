@@ -1052,7 +1052,9 @@ namespace Content.Client.Lobby.UI
         /// </summary>
         public void RefreshLoadouts()
         {
-            _loadoutWindow?.Dispose();
+            _loadoutWindow?.Close();
+            if (_loadoutWindow is { Disposed: false })
+                _loadoutWindow.Orphan();
             _loadoutWindow = null;
         }
 
@@ -1359,7 +1361,9 @@ namespace Content.Client.Lobby.UI
 
         private void OpenLoadout(JobPrototype? jobProto, RoleLoadout roleLoadout, RoleLoadoutPrototype roleLoadoutProto)
         {
-            _loadoutWindow?.Dispose();
+            _loadoutWindow?.Close();
+            if (_loadoutWindow is { Disposed: false })
+                _loadoutWindow.Orphan();
             _loadoutWindow = null;
             var collection = IoCManager.Instance;
 
@@ -1419,7 +1423,9 @@ namespace Content.Client.Lobby.UI
         // Starlight Start: Antag loadouts
         private void OpenAntagLoadout(AntagPrototype antagProto, RoleLoadout roleLoadout, RoleLoadoutPrototype roleLoadoutProto)
         {
-            _loadoutWindow?.Dispose();
+            _loadoutWindow?.Close();
+            if (_loadoutWindow is { Disposed: false })
+                _loadoutWindow.Orphan();
             _loadoutWindow = null;
             var collection = IoCManager.Instance;
 
@@ -1592,7 +1598,9 @@ namespace Content.Client.Lobby.UI
         {
             base.ExitedTree();
 
-            _loadoutWindow?.Dispose();
+            _loadoutWindow?.Close();
+            if (_loadoutWindow is { Disposed: false })
+                _loadoutWindow.Orphan();
             _loadoutWindow = null;
         }
 

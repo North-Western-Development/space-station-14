@@ -229,7 +229,7 @@ public sealed partial class AHelpUIController: UIController, IOnSystemChanged<Bw
         }
 
         helper.Control.Orphan();
-        helper.Window.Dispose();
+        helper.Window.Close();
         helper.Window = null;
         helper.EverOpened = false;
 
@@ -380,17 +380,20 @@ public sealed class AdminAHelpUIHandler : IAHelpUIHandler
         if (ClydeWindow != null)
         {
             ClydeWindow.RequestClosed -= OnRequestClosed;
-            ClydeWindow.Dispose();
-            // need to dispose control cause we cant reattach it directly back to the window
-            // but orphan panels first so -they- can get readded when the window is opened again
+            // Orphan panels/control before disposing the Clyde window so they are not disposed with the root.
             if (Control != null)
             {
                 foreach (var (_, panel) in _activePanelMap)
                 {
-                    panel.Orphan();
+                    if (!panel.Disposed)
+                        panel.Orphan();
                 }
-                Control?.Dispose();
+
+                if (!Control.Disposed)
+                    Control.Orphan();
             }
+
+            ClydeWindow.Dispose();
             // window wont be closed here so we will invoke ourselves
             OnClose?.Invoke();
         }
@@ -490,7 +493,7 @@ public sealed class AdminAHelpUIHandler : IAHelpUIHandler
 
     public void Dispose()
     {
-        Window?.Dispose();
+        Window?.Close();
         Window = null;
         Control = null;
         _activePanelMap.Clear();
@@ -592,7 +595,7 @@ public sealed class UserAHelpUIHandler : IAHelpUIHandler
 
     public void Dispose()
     {
-        _window?.Dispose();
+        _window?.Close();
         _window = null;
         _chatPanel = null;
     }
