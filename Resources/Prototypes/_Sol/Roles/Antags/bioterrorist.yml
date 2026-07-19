@@ -122,6 +122,10 @@
       key_slots:
       - EncryptionKeyBioterror
       - EncryptionKeyCommon
+  - type: Sprite
+    sprite: Clothing/Ears/Headsets/base.rsi
+  - type: Clothing
+    sprite: Clothing/Ears/Headsets/base.rsi
 
 - type: startingGear
   id: BioterroristGear
@@ -132,7 +136,7 @@
     ears: ClothingHeadsetBioterror
     gloves: ClothingHandsGlovesLatex
     mask: ClothingMaskSterile
-    id: PassengerPDA
+    id: AssistantPDA
     pocket1: SolEnvironmentalScraper
   storage:
     back:
@@ -213,5 +217,5 @@
     unique: true
     issuer: objective-issuer-syndicate
     icon:
-      sprite: Objects/Misc/bureaucracy.rsi
+      sprite: Objects/Misc/folders.rsi
       state: folder-white

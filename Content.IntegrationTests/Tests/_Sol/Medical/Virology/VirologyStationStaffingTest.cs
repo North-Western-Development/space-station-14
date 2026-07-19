@@ -11,9 +11,10 @@ namespace Content.IntegrationTests.Tests._Sol.Medical.Virology;
 [TestFixture]
 public sealed class VirologyStationStaffingTest
 {
-    private static readonly ProtoId<GameMapPrototype> CorkMap = "SolCork";
-    private static readonly ProtoId<GameMapPrototype> SalternMap = "SolSaltern";
-    private static readonly ProtoId<GameMapPoolPrototype> VirologyPool = "VirologyMapPool";
+    // Strings (not ProtoId) so YAMLLinter static-field checks don't require map kinds on the client.
+    private const string CorkMap = "SolCork";
+    private const string SalternMap = "SolSaltern";
+    private const string VirologyPool = "VirologyMapPool";
     private static readonly ProtoId<JobPrototype> VirologistJob = "Virologist";
 
     [Test]
@@ -33,9 +34,9 @@ public sealed class VirologyStationStaffingTest
             AssertStation(proto, stationSystem, stationJobs, CorkMap, viroName, expectedSlots: 1);
             AssertStation(proto, stationSystem, stationJobs, SalternMap, viroName, expectedSlots: 3);
 
-            Assert.That(proto.TryIndex(VirologyPool, out var pool), Is.True);
-            Assert.That(pool!.Maps, Does.Contain(CorkMap.Id));
-            Assert.That(pool.Maps, Does.Contain(SalternMap.Id));
+            Assert.That(proto.TryIndex<GameMapPoolPrototype>(VirologyPool, out var pool), Is.True);
+            Assert.That(pool!.Maps, Does.Contain(CorkMap));
+            Assert.That(pool.Maps, Does.Contain(SalternMap));
         });
 
         await pair.CleanReturnAsync();
@@ -45,27 +46,27 @@ public sealed class VirologyStationStaffingTest
         IPrototypeManager proto,
         StationSystem stationSystem,
         StationJobsSystem stationJobs,
-        ProtoId<GameMapPrototype> mapId,
+        string mapId,
         string viroName,
         int expectedSlots)
     {
-        Assert.That(proto.TryIndex(mapId, out var map), Is.True, mapId.Id);
-        Assert.That(map!.Stations, Is.Not.Empty, mapId.Id);
+        Assert.That(proto.TryIndex<GameMapPrototype>(mapId, out var map), Is.True, mapId);
+        Assert.That(map!.Stations, Is.Not.Empty, mapId);
 
         var found = false;
         foreach (var (stationId, stationConfig) in map.Stations)
         {
             Assert.That(stationConfig.StationComponentOverrides.TryGetComponent(viroName, out _),
                 Is.True,
-                $"{mapId.Id}/{stationId} missing VirologyStation");
+                $"{mapId}/{stationId} missing VirologyStation");
 
-            var station = stationSystem.InitializeNewStation(stationConfig, null, $"{mapId.Id}-{stationId}");
+            var station = stationSystem.InitializeNewStation(stationConfig, null, $"{mapId}-{stationId}");
             var jobs = stationJobs.GetRoundStartJobs(station);
-            Assert.That(jobs.TryGetValue(VirologistJob, out var slots), Is.True, $"{mapId.Id}/{stationId} missing Virologist");
-            Assert.That(slots, Is.EqualTo(expectedSlots), $"{mapId.Id} round-start slots");
+            Assert.That(jobs.TryGetValue(VirologistJob, out var slots), Is.True, $"{mapId}/{stationId} missing Virologist");
+            Assert.That(slots, Is.EqualTo(expectedSlots), $"{mapId} round-start slots");
             found = true;
         }
 
-        Assert.That(found, Is.True, mapId.Id);
+        Assert.That(found, Is.True, mapId);
     }
 }

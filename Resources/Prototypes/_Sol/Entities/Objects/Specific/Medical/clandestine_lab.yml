@@ -17,7 +17,7 @@
   - type: Appearance
   - type: ClandestineSampleAnalyzer
   - type: AccessReader
-    access: [["Syndicate"], ["Virology"]]
+    access: [["SyndicateAgent"], ["Virology"]]
   - type: SolutionContainerManager
     solutions:
       tank:
@@ -52,7 +52,7 @@
   - type: Appearance
   - type: ClandestineCultureIncubator
   - type: AccessReader
-    access: [["Syndicate"], ["Virology"]]
+    access: [["SyndicateAgent"], ["Virology"]]
   - type: SolutionContainerManager
     solutions:
       tank:
@@ -87,7 +87,7 @@
   - type: Appearance
   - type: ClandestinePathogenSynthesizer
   - type: AccessReader
-    access: [["Syndicate"], ["Virology"]]
+    access: [["SyndicateAgent"], ["Virology"]]
   - type: SolutionContainerManager
     solutions:
       tank:
