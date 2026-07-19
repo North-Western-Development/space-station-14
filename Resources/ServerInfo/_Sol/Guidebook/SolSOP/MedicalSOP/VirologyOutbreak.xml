@@ -1,12 +1,23 @@
 <Document>
 # Virology and Outbreak Procedure
 
-1. On discovery of a contagious illness, isolate symptomatic patients and don appropriate PPE before extended contact.
-2. Collect swabs for rapid surface/mucosal screening and blood samples for centrifuged panels when stage, antibodies, or systemic involvement must be confirmed.
-3. Virology airlocks should be cycled closed to sterilize chamber air and decontaminate exposed gear when leaving the lab.
-4. Quarantine may be ordered by the CMO. Release from quarantine requires resolved symptoms and, when available, a negative follow-up test or documented immunity/vaccine status.
-5. Medical may request Code Violet when an outbreak threatens station-wide spread or overwhelms medical capacity. See Violet Alert Protocol.
-6. Naturally occurring outbreaks are handled as medical incidents. Suspected deliberate release (food contamination, atmos distribution, engineered strains) requires Security involvement and evidence preservation.
-7. Live pathogen experimentation and intentional environmental release are prohibited outside authorized containment.
-8. Between-patient surgical hygiene is mandatory on virology-enabled stations: sterile/disinfected tools, mask and gloves, and wound preparation.
+1. On discovery of a contagious illness, notify Medical and the Chief Medical Officer at once. Isolate symptomatic crew before extended contact.
+
+2. Don appropriate protective equipment before handling patients or contaminated areas. Masks and gloves are the minimum for routine contact; a sealed virology biosuit and hood are required for suspected airborne disease or unknown high-risk work.
+
+3. Examine patients with a health analyzer for general condition and known allergies. Collect a fresh disease swab for rapid screening, and draw blood for a centrifuged panel when confirmation of stage, antibodies, or organ involvement is required.
+
+4. Treat early testing with caution. Incubating infections may evade detection, while surface contamination can produce a positive swab without proving systemic infection.
+
+5. Quarantine may be ordered by the CMO. Release requires resolved symptoms and, when available, a negative follow-up test or documented immunity or vaccine status.
+
+6. Treat active illness with the indicated antiviral, antibiotic, or specialized antiviral. Confirmed samples may be used to prepare strain-specific vaccines for uninfected or incubating crew. Vaccines do not cure established symptomatic infection.
+
+7. Decontaminate between patients. Wear sterile gloves and masks for surgery or sampling, wash and sterilize dirty tools, and use powered scrubbers and sterilization chambers when leaving contaminated spaces. Closing the chamber entrance begins an automatic sterilization cycle; exit only after the fog clears and the opposite door opens.
+
+8. Medical may request Code Violet when an outbreak threatens station-wide spread or overwhelms medical capacity. See Violet Alert Protocol.
+
+9. Naturally occurring outbreaks are medical incidents. Suspected deliberate release through food, atmosphere, or engineered strains requires Security involvement and preservation of samples and evidence.
+
+10. Live pathogen experimentation and intentional environmental release are prohibited outside authorized sealed containment.
 </Document>

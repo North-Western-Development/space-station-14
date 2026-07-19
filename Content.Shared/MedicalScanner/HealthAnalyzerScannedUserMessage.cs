@@ -39,8 +39,9 @@ public struct HealthAnalyzerUiState
     public bool? Unrevivable;
     public List<(string ReagentId, FixedPoint2 Quantity)>? MetabolizingReagents; // Starlight - list of metabolizing reagents inside scanned user
 
-    // Sol-start: organ status + optional debug virology payload
+    // Sol-start: organ status, allergies, and optional debug virology payload
     public List<(NetEntity OrganEntity, string OrganName, string Status)>? Organs;
+    public List<string>? Allergies;
     public List<string>? DebugLines;
     // Sol-end
 

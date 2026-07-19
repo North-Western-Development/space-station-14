@@ -440,7 +440,13 @@ public sealed partial class HealthAnalyzerSystem : EntitySystem
             uiState.Temperature,
             uiState.BloodLevel,
             damageable.TotalDamage,
-            groupedInjuries);
+            groupedInjuries,
+            uiState.Organs?
+                .Select(organ => (FormattedMessage.EscapeText(organ.OrganName), FormattedMessage.EscapeText(organ.Status)))
+                .ToList() ?? [],
+            uiState.Allergies?
+                .Select(FormattedMessage.EscapeText)
+                .ToList() ?? []);
     }
 
     private HealthAnalyzerDamageGroupSnapshot? BuildDamageGroupSnapshot(
@@ -502,31 +508,69 @@ public sealed partial class HealthAnalyzerSystem : EntitySystem
         if (snapshot.DamageGroups.Count == 0)
         {
             message.AddMarkupOrThrow(Loc.GetString("health-analyzer-report-no-injuries"));
-            return message.ToMarkup();
+            message.PushNewline();
+        }
+        else
+        {
+            foreach (var group in snapshot.DamageGroups)
+            {
+                var severitySuffix = HealthAnalyzerFormatting.GetDamageSeveritySuffix((float) group.Amount);
+                var amountText = string.IsNullOrEmpty(severitySuffix)
+                    ? group.Amount.ToString()
+                    : $"{group.Amount} {severitySuffix}";
+                var groupLine = Loc.GetString(
+                    "health-analyzer-report-injury-group",
+                    ("group", group.Name),
+                    ("amount", amountText));
+                message.AddMarkupOrThrow(HealthAnalyzerFormatting.WrapMarkupWithColor(
+                    groupLine,
+                    HealthAnalyzerFormatting.GetDamageSeverityColor((float) group.Amount)));
+                message.PushNewline();
+
+                foreach (var damageType in group.DamageTypes)
+                {
+                    var damageLine = Loc.GetString(
+                        "health-analyzer-report-injury-type",
+                        ("type", damageType.Name),
+                        ("amount", damageType.Amount));
+                    message.AddMarkupOrThrow($"- {damageLine}");
+                    message.PushNewline();
+                }
+            }
         }
 
-        foreach (var group in snapshot.DamageGroups)
-        {
-            var severitySuffix = HealthAnalyzerFormatting.GetDamageSeveritySuffix((float) group.Amount);
-            var amountText = string.IsNullOrEmpty(severitySuffix)
-                ? group.Amount.ToString()
-                : $"{group.Amount} {severitySuffix}";
-            var groupLine = Loc.GetString(
-                "health-analyzer-report-injury-group",
-                ("group", group.Name),
-                ("amount", amountText));
-            message.AddMarkupOrThrow(HealthAnalyzerFormatting.WrapMarkupWithColor(
-                groupLine,
-                HealthAnalyzerFormatting.GetDamageSeverityColor((float) group.Amount)));
-            message.PushNewline();
+        message.PushNewline();
+        message.AddMarkupOrThrow($"[head=2][bold]{Loc.GetString("sol-health-analyzer-organs-header")}[/bold][/head]");
+        message.PushNewline();
 
-            foreach (var damageType in group.DamageTypes)
+        if (snapshot.Organs.Count == 0)
+        {
+            message.AddMarkupOrThrow(Loc.GetString("sol-health-analyzer-no-organs"));
+            message.PushNewline();
+        }
+        else
+        {
+            foreach (var (organ, status) in snapshot.Organs)
             {
-                var damageLine = Loc.GetString(
-                    "health-analyzer-report-injury-type",
-                    ("type", damageType.Name),
-                    ("amount", damageType.Amount));
-                message.AddMarkupOrThrow($"- {damageLine}");
+                message.AddMarkupOrThrow(Loc.GetString("sol-health-analyzer-organ-line", ("organ", organ), ("status", status)));
+                message.PushNewline();
+            }
+        }
+
+        message.PushNewline();
+        message.AddMarkupOrThrow($"[head=2][bold]{Loc.GetString("sol-health-analyzer-allergies-header")}[/bold][/head]");
+        message.PushNewline();
+
+        if (snapshot.Allergies.Count == 0)
+        {
+            message.AddMarkupOrThrow(Loc.GetString("sol-health-analyzer-no-known-allergies"));
+            message.PushNewline();
+        }
+        else
+        {
+            foreach (var allergy in snapshot.Allergies)
+            {
+                message.AddMarkupOrThrow(Loc.GetString("sol-health-analyzer-allergy-line", ("allergy", allergy)));
                 message.PushNewline();
             }
         }
@@ -543,7 +587,9 @@ public sealed partial class HealthAnalyzerSystem : EntitySystem
         float Temperature,
         float BloodLevel,
         FixedPoint2 TotalDamage,
-        List<HealthAnalyzerDamageGroupSnapshot> DamageGroups);
+        List<HealthAnalyzerDamageGroupSnapshot> DamageGroups,
+        List<(string OrganName, string Status)> Organs,
+        List<string> Allergies);
 
     private sealed record HealthAnalyzerDamageGroupSnapshot(
         string Name,

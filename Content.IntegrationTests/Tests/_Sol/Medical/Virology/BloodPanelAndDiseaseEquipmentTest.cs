@@ -45,7 +45,7 @@ public sealed class BloodPanelAndDiseaseEquipmentTest
         await server.WaitAssertion(() =>
         {
             var patient = entMan.Spawn("MobHuman");
-            var vial = entMan.Spawn("BaseChemistryEmptyVial");
+            var vial = entMan.Spawn("ChemistryEmptyVial");
             var blood = entMan.EnsureComponent<CentrifugeCompatibleBloodVialComponent>(vial);
             var sample = entMan.EnsureComponent<PathogenSampleComponent>(vial);
             sample.IsBloodSample = true;

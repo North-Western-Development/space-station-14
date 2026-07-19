@@ -37,7 +37,17 @@ public sealed class SurgeryInfectionSystem : EntitySystem
     private void OnSurgeryStepCompleted(ref SolSurgeryStepCompletedEvent args)
     {
         var modifiers = CalculateModifiers(args.User, args.Body, args.Tools, args.Failed);
-        if (!modifiers.StationEnabled || modifiers.FinalChance <= 0f || modifiers.SelectedPathogenId == null)
+        if (!modifiers.StationEnabled)
+            return;
+
+        // Gloves and tools lose sterility after every applicable surgery step.
+        foreach (var tool in args.Tools)
+            MarkSterilityLost(tool);
+
+        if (_inventory.TryGetSlotEntity(args.User, "gloves", out var gloves))
+            MarkSterilityLost(gloves.Value);
+
+        if (modifiers.FinalChance <= 0f || modifiers.SelectedPathogenId == null)
             return;
 
         var roll = ForcedRoll ?? _random.NextFloat();
@@ -52,13 +62,11 @@ public sealed class SurgeryInfectionSystem : EntitySystem
             source: args.User,
             force: true);
 
-        // Contaminate used tools from the patient / procedure.
+        // Contaminate used tools from the successful infection exposure.
         foreach (var tool in args.Tools)
-        {
             MarkToolUsed(tool, modifiers.SelectedPathogenId, args.Body);
-        }
 
-        if (_inventory.TryGetSlotEntity(args.User, "gloves", out var gloves))
+        if (gloves != null)
             MarkToolUsed(gloves.Value, modifiers.SelectedPathogenId, args.Body);
     }
 
@@ -196,10 +204,26 @@ public sealed class SurgeryInfectionSystem : EntitySystem
         return DefaultSurgeryPathogen;
     }
 
-    private void MarkToolUsed(EntityUid tool, string pathogenId, EntityUid patient)
+    private void MarkSterilityLost(EntityUid tool)
     {
         var sterility = EnsureComp<SurgicalToolSterilityComponent>(tool);
+        if (sterility.State == SurgicalSterilityState.Dirty)
+            return;
+
         sterility.State = SurgicalSterilityState.Dirty;
+        Dirty(tool, sterility);
+
+        if (TryComp<SurfaceContaminationComponent>(tool, out var surface))
+        {
+            surface.IsDirty = true;
+            Dirty(tool, surface);
+        }
+    }
+
+    private void MarkToolUsed(EntityUid tool, string pathogenId, EntityUid patient)
+    {
+        MarkSterilityLost(tool);
+        var sterility = EnsureComp<SurgicalToolSterilityComponent>(tool);
 
         var found = false;
         foreach (var entry in sterility.Contaminants)

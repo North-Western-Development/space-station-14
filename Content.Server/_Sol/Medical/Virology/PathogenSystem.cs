@@ -505,7 +505,10 @@ public sealed class PathogenSystem : SharedPathogenSystem
         Dirty(uid, airborne);
     }
 
-    private void TryApplyTreatments(EntityUid uid, ActivePathogenInfection infection, PathogenDefinition pathogen)
+    private const float MinimumTreatmentQuantity = 0.5f;
+    private const float TreatmentDoseReduction = 0.5f;
+
+    internal void TryApplyTreatments(EntityUid uid, ActivePathogenInfection infection, PathogenDefinition pathogen)
     {
         if (pathogen.Treatments.Count == 0)
             return;
@@ -518,18 +521,25 @@ public sealed class PathogenSystem : SharedPathogenSystem
         if (!_solutions.TryGetSolution(uid, bloodstream.BloodSolutionName, out _, out var solution))
             return;
 
+        // Only one treatment application per tick. Trace amounts do not count.
+        var hasTreatment = false;
         foreach (var treatment in pathogen.Treatments)
         {
-            var qty = solution.GetTotalPrototypeQuantity(treatment);
-            if (qty <= 0)
+            if (solution.GetTotalPrototypeQuantity(treatment) < MinimumTreatmentQuantity)
                 continue;
 
-            infection.Dose = Math.Max(0, infection.Dose - 0.5f);
-            if (infection.Dose < pathogen.InfectiveDose * 0.25f && infection.Stage != PathogenStage.Recovering)
-            {
-                infection.Stage = PathogenStage.Recovering;
-                infection.StageStartedAt = Timing.CurTime;
-            }
+            hasTreatment = true;
+            break;
+        }
+
+        if (!hasTreatment)
+            return;
+
+        infection.Dose = Math.Max(0, infection.Dose - TreatmentDoseReduction);
+        if (infection.Dose < pathogen.InfectiveDose * 0.25f && infection.Stage != PathogenStage.Recovering)
+        {
+            infection.Stage = PathogenStage.Recovering;
+            infection.StageStartedAt = Timing.CurTime;
         }
     }
 }

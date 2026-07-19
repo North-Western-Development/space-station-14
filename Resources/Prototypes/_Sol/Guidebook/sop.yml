@@ -639,6 +639,7 @@
       - medical-sop-deceasedpatientcare
       - medical-sop-violetalertprotocol
       - medical-sop-virology-outbreak
+      - medical-sop-allergies
 
 
 - type: guideEntry
@@ -700,6 +701,12 @@
   name: guide-entry-sl-medical-sop-virology-outbreak
   text: "/ServerInfo/_Sol/Guidebook/SolSOP/MedicalSOP/VirologyOutbreak.xml"
   priority: 4
+
+- type: guideEntry
+  id: medical-sop-allergies
+  name: guide-entry-sl-medical-sop-allergies
+  text: "/ServerInfo/_Sol/Guidebook/SolSOP/MedicalSOP/Allergies.xml"
+  priority: 5
 
 
 

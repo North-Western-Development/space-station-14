@@ -57,25 +57,3 @@ public sealed partial class AirborneContaminantComponent : Component
     [DataField, AutoNetworkedField]
     public float DecayMultiplier = 1f;
 }
-
-/// <summary>
-/// Airlock that sterilizes occupants and chamber contaminants on a completed cycle.
-/// </summary>
-[RegisterComponent, NetworkedComponent, AutoGenerateComponentState]
-public sealed partial class SterilizationAirlockComponent : Component
-{
-    [DataField, AutoNetworkedField]
-    public float SterilizationStrength = 1f;
-
-    [DataField, AutoNetworkedField]
-    public TimeSpan CycleDuration = TimeSpan.FromSeconds(4);
-
-    [DataField, AutoNetworkedField]
-    public bool RequiresPower = true;
-
-    [DataField, AutoNetworkedField]
-    public bool CycleInProgress;
-
-    [DataField, AutoNetworkedField]
-    public TimeSpan CycleEndsAt;
-}

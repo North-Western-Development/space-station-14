@@ -1,4 +1,5 @@
 using Content.Shared.Damage;
+using Content.Shared.Humanoid.Prototypes;
 using Robust.Shared.Prototypes;
 
 namespace Content.Shared._Sol.Medical.Allergy;
@@ -8,6 +9,13 @@ public sealed partial class AllergyPrototype : IPrototype
 {
     [IdDataField]
     public string ID { get; private set; } = default!;
+
+    /// <summary>
+    /// Species that innately have this allergy. It is applied on spawn and shown
+    /// auto-selected (and locked) in the character editor allergy tab.
+    /// </summary>
+    [DataField]
+    public List<ProtoId<SpeciesPrototype>> InnateSpecies = new();
 
     [DataField(required: true)]
     public LocId Name = default!;
@@ -26,6 +34,13 @@ public sealed partial class AllergyPrototype : IPrototype
     /// </summary>
     [DataField]
     public List<EntProtoId> TriggerFoods = new();
+
+    /// <summary>
+    /// Food prototype roots whose descendants trigger this allergy.
+    /// Use only for semantically uniform food families.
+    /// </summary>
+    [DataField]
+    public List<EntProtoId> TriggerFoodRoots = new();
 
     [DataField]
     public AllergySeverity DefaultSeverity = AllergySeverity.Mild;

@@ -1,4 +1,5 @@
 using System.Globalization;
+using System.Linq;
 using Content.Server._Sol.Medical.Allergy;
 using Content.Shared._Sol.Medical.Allergy;
 using Content.Shared._Sol.Medical.Virology;
@@ -37,9 +38,7 @@ public sealed class SolHealthAnalyzerSystem : EntitySystem
     private void OnFill(ref HealthAnalyzerVirologyFillEvent args)
     {
         args.State.Organs = BuildOrganStatus(args.Target);
-
-        foreach (var name in _allergies.GetAllergyDisplayNames(args.Target))
-            args.State.Organs.Add((NetEntity.Invalid, $"Allergy: {name}", "Known"));
+        args.State.Allergies = _allergies.GetAllergyDisplayNames(args.Target).ToList();
 
         if (!args.Debug)
             return;

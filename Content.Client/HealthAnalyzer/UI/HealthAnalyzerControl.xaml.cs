@@ -37,6 +37,8 @@ public sealed partial class HealthAnalyzerControl : BoxContainer
     public void SetPrintReportVisible(bool visible)
     {
         PrintReportButton.Visible = visible;
+        if (!visible)
+            AllergyWarningLabel.Visible = false;
     }
     // Starlight-end
 
@@ -54,6 +56,7 @@ public sealed partial class HealthAnalyzerControl : BoxContainer
         // Sol-start: clinical details are split into dedicated right-column tabs.
         DiagnosticTabs.SetTabTitle(0, Loc.GetString("sol-health-analyzer-damage-tab"));
         DiagnosticTabs.SetTabTitle(1, Loc.GetString("sol-health-analyzer-organs-tab"));
+        DiagnosticTabs.SetTabTitle(2, Loc.GetString("sol-health-analyzer-allergies-tab"));
         // Sol-end
     }
 
@@ -68,6 +71,7 @@ public sealed partial class HealthAnalyzerControl : BoxContainer
         {
             NoPatientDataText.Visible = true;
             PatientDataContainer.Visible = false;
+            AllergyWarningLabel.Visible = false;
             return;
         }
 
@@ -162,13 +166,42 @@ public sealed partial class HealthAnalyzerControl : BoxContainer
         // Starlight end
         DrawDiagnosticGroups(sortedGroups, damagePerType);
 
-        // Sol-start: organ status + debug analyzer lines
+        // Sol-start: organ status, allergies, and debug analyzer lines
         DrawSolOrganStatus(state.Organs);
+        DrawSolAllergies(state.Allergies);
         DrawSolDebugLines(state.DebugLines);
         // Sol-end
     }
 
     // Sol-start
+    private void DrawSolAllergies(List<string>? allergies)
+    {
+        AllergiesContainer.RemoveAllChildren();
+
+        var hasAllergies = allergies is { Count: > 0 };
+        AllergyWarningLabel.Visible = hasAllergies && PrintReportButton.Visible;
+
+        if (!hasAllergies)
+        {
+            AllergiesContainer.AddChild(new Label
+            {
+                Text = Loc.GetString("sol-health-analyzer-no-known-allergies"),
+                HorizontalAlignment = HAlignment.Center,
+            });
+            return;
+        }
+
+        foreach (var allergy in allergies!.OrderBy(name => name))
+        {
+            AllergiesContainer.AddChild(new Label
+            {
+                Text = allergy,
+                HorizontalExpand = true,
+                Margin = new Thickness(0, 2),
+            });
+        }
+    }
+
     private void DrawSolOrganStatus(List<(NetEntity OrganEntity, string OrganName, string Status)>? organs)
     {
         OrgansContainer.RemoveAllChildren();

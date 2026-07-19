@@ -33,13 +33,22 @@
                 </BoxContainer>
             </BoxContainer>
 
-            <Button
-                Name="PrintReportButton"
-                Text="{Loc 'health-analyzer-window-print-report'}"
-                Disabled="True"
-                Visible="False"
-                HorizontalAlignment="Left"
-                Margin="0 0 0 5" />
+            <BoxContainer Orientation="Horizontal" Margin="0 0 0 5" HorizontalExpand="True">
+                <Button
+                    Name="PrintReportButton"
+                    Text="{Loc 'health-analyzer-window-print-report'}"
+                    Disabled="True"
+                    Visible="False"
+                    HorizontalAlignment="Left" />
+                <Control HorizontalExpand="True" />
+                <Label
+                    Name="AllergyWarningLabel"
+                    Text="{Loc 'sol-health-analyzer-allergies-warning'}"
+                    FontColorOverride="Yellow"
+                    Visible="False"
+                    VerticalAlignment="Center"
+                    HorizontalAlignment="Right" />
+            </BoxContainer>
 
             <PanelContainer StyleClasses="LowDivider" />
 
@@ -77,6 +86,9 @@
             </ScrollContainer>
             <ScrollContainer VScrollEnabled="True" HorizontalExpand="True" VerticalExpand="True">
                 <BoxContainer Name="OrgansContainer" Margin="2 5" Orientation="Vertical" />
+            </ScrollContainer>
+            <ScrollContainer VScrollEnabled="True" HorizontalExpand="True" VerticalExpand="True">
+                <BoxContainer Name="AllergiesContainer" Margin="2 5" Orientation="Vertical" />
             </ScrollContainer>
         </TabContainer>
     </BoxContainer>
