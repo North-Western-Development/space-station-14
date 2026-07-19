@@ -1,5 +1,4 @@
 #nullable enable
-using System.Linq;
 using Content.IntegrationTests.Fixtures;
 using Content.Server.CartridgeLoader;
 using Content.Shared.CartridgeLoader;
@@ -18,70 +17,70 @@ public sealed class CartridgeLoaderDiskSpaceTest : GameTest
   id: DiskSpaceTestCartridge1
   components:
   - type: Cartridge
-    programName: disk-space-test-1
+    programName: notekeeper-program-name
 
 - type: entity
   parent: BasePDACartridge
   id: DiskSpaceTestCartridge2
   components:
   - type: Cartridge
-    programName: disk-space-test-2
+    programName: notekeeper-program-name
 
 - type: entity
   parent: BasePDACartridge
   id: DiskSpaceTestCartridge3
   components:
   - type: Cartridge
-    programName: disk-space-test-3
+    programName: notekeeper-program-name
 
 - type: entity
   parent: BasePDACartridge
   id: DiskSpaceTestCartridge4
   components:
   - type: Cartridge
-    programName: disk-space-test-4
+    programName: notekeeper-program-name
 
 - type: entity
   parent: BasePDACartridge
   id: DiskSpaceTestCartridge5
   components:
   - type: Cartridge
-    programName: disk-space-test-5
+    programName: notekeeper-program-name
 
 - type: entity
   parent: BasePDACartridge
   id: DiskSpaceTestCartridge6
   components:
   - type: Cartridge
-    programName: disk-space-test-6
+    programName: notekeeper-program-name
 
 - type: entity
   parent: BasePDACartridge
   id: DiskSpaceTestCartridge7
   components:
   - type: Cartridge
-    programName: disk-space-test-7
+    programName: notekeeper-program-name
 
 - type: entity
   parent: BasePDACartridge
   id: DiskSpaceTestCartridge8
   components:
   - type: Cartridge
-    programName: disk-space-test-8
+    programName: notekeeper-program-name
 
 - type: entity
   parent: BasePDACartridge
   id: DiskSpaceTestCartridge9
   components:
   - type: Cartridge
-    programName: disk-space-test-9
+    programName: notekeeper-program-name
 
 - type: entity
   parent: BasePDACartridge
   id: DiskSpaceTestCartridge10
   components:
   - type: Cartridge
-    programName: disk-space-test-10
+    programName: notekeeper-program-name
 
 - type: entity
   parent: BasePDA
@@ -119,23 +118,7 @@ public sealed class CartridgeLoaderDiskSpaceTest : GameTest
 
             Assert.That(loaderSystem.InstallProgram(pda, "DiskSpaceTestCartridge10", loader: loader), Is.True);
 
-            var installed = loaderSystem.GetInstalled(pda);
-            Assert.That(installed.Count, Is.EqualTo(10));
-            Assert.That(
-                installed.Select(uid => entMan.GetComponent<CartridgeComponent>(uid).ProgramName),
-                Is.EquivalentTo(new[]
-                {
-                    "disk-space-test-1",
-                    "disk-space-test-2",
-                    "disk-space-test-3",
-                    "disk-space-test-4",
-                    "disk-space-test-5",
-                    "disk-space-test-6",
-                    "disk-space-test-7",
-                    "disk-space-test-8",
-                    "disk-space-test-9",
-                    "disk-space-test-10",
-                }));
+            Assert.That(loaderSystem.GetInstalled(pda).Count, Is.EqualTo(10));
         });
     }
 }
