@@ -4,8 +4,8 @@ meta:
   engineVersion: 283.1.0
   forkId: ""
   forkVersion: ""
-  time: 07/18/2026 22:55:54
-  entityCount: 14380
+  time: 07/19/2026 01:19:47
+  entityCount: 14381
 maps:
 - 1
 grids:
@@ -6755,6 +6755,9 @@ entities:
         10145:
         - - DoorStatus
           - DoorBolt
+        14381:
+        - - DoorStatus
+          - SterilizerDoorB
   - uid: 10145
     components:
     - type: Transform
@@ -6770,13 +6773,9 @@ entities:
         218:
         - - DoorStatus
           - DoorBolt
-- proto: SolSterilizationAirlockController
-  entities:
-  - uid: 14380
-    components:
-    - type: Transform
-      parent: 2
-      pos: 26.5,-20.5
+        14381:
+        - - DoorStatus
+          - SterilizerDoorA
 - proto: AirSensor
   entities:
   - uid: 198
@@ -62854,7 +62853,7 @@ entities:
       pos: 27.5,-24.5
     - type: Door
       state: Opening
-      secondsUntilStateChange: -194.01956
+      secondsUntilStateChange: -254.68636
   - uid: 14377
     components:
     - type: Transform
@@ -75879,6 +75878,24 @@ entities:
     - type: Transform
       parent: 2
       pos: -32.5,15.5
+- proto: SolSterilizationAirlockController
+  entities:
+  - uid: 14380
+    components:
+    - type: Transform
+      parent: 2
+      pos: 26.5,-20.5
+  - uid: 14381
+    components:
+    - type: Transform
+      parent: 2
+      pos: 24.5,-20.5
+    - type: DeviceLinkSink
+      invokeCounter: 1
+    - type: SterilizationAirlockController
+      entranceDoor: 218
+      doorB: 218
+      doorA: 10145
 - proto: SpaceCash100
   entities:
   - uid: 11532
@@ -81044,6 +81061,11 @@ entities:
         10145:
         - - On
           - DoorBolt
+        14381:
+        - - On
+          - SterilizerQuarantineLock
+        - - Off
+          - SterilizerQuarantineLock
     - type: Fixtures
       fixtures: {}
 - proto: VirologyAlarmLight

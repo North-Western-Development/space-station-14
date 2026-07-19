@@ -153,6 +153,7 @@ public sealed class SterilizationAirlockControllerTest
         var server = pair.Server;
         var testMap = await pair.CreateTestMap();
         var entMan = server.ResolveDependency<IEntityManager>();
+        var timing = server.ResolveDependency<IGameTiming>();
         var map = entMan.System<SharedMapSystem>();
         var doors = entMan.System<SharedDoorSystem>();
         var sterilizer = entMan.System<SterilizationAirlockSystem>();
@@ -241,6 +242,37 @@ public sealed class SterilizationAirlockControllerTest
             Assert.That(controllerComp.EntranceDoor, Is.EqualTo(doorB));
             Assert.That(controllerComp.Phase, Is.EqualTo(SterilizationControllerPhase.Closing));
             Assert.That(controllerComp.ExitDoor, Is.EqualTo(doorA));
+            Assert.That(controllerComp.OpenExitAfterSterilization, Is.True);
+
+            // Follow-up cleanse after inbound entry through the outer door must not reopen outer.
+            controllerComp.Phase = SterilizationControllerPhase.Idle;
+            controllerComp.EntranceDoor = null;
+            controllerComp.ExitDoor = null;
+            controllerComp.AwaitingInnerResterilize = true;
+            entMan.RemoveComponent<SterilizationDoorLockComponent>(doorA);
+            entMan.RemoveComponent<SterilizationDoorLockComponent>(doorB);
+
+            var followUpClose = new SignalReceivedEvent(
+                SterilizationAirlockSystem.DoorBPort,
+                doorB,
+                innerClose);
+            entMan.EventBus.RaiseLocalEvent(controller, ref followUpClose);
+            Assert.That(controllerComp.OpenExitAfterSterilization, Is.False);
+            Assert.That(controllerComp.AwaitingInnerResterilize, Is.False);
+            Assert.That(controllerComp.Phase, Is.EqualTo(SterilizationControllerPhase.Closing));
+
+            doors.SetState(doorA, DoorState.Closed);
+            doors.SetState(doorB, DoorState.Closed);
+            sterilizer.Update(0.1f);
+            Assert.That(controllerComp.Phase, Is.EqualTo(SterilizationControllerPhase.Fogging));
+
+            controllerComp.Phase = SterilizationControllerPhase.Fading;
+            controllerComp.PhaseEndsAt = timing.CurTime;
+            sterilizer.Update(0.1f);
+            Assert.That(controllerComp.Phase, Is.EqualTo(SterilizationControllerPhase.Idle));
+            Assert.That(entMan.GetComponent<DoorComponent>(doorA).State, Is.EqualTo(DoorState.Closed));
+            Assert.That(entMan.GetComponent<DoorBoltComponent>(doorA).BoltsDown, Is.True);
+            Assert.That(entMan.GetComponent<DoorBoltComponent>(doorB).BoltsDown, Is.True);
 
             controllerComp.RequiresPower = true;
             Assert.That(entMan.TryGetComponent(controller, out ApcPowerReceiverComponent power), Is.True);

@@ -153,10 +153,15 @@ public sealed class SterilizationAirlockSystem : EntitySystem
         if (ent.Comp.Phase != SterilizationControllerPhase.Idle)
             return;
 
+        var innerDoor = GetInnerDoor(ent.Comp);
+
         // Track which door was opened as the entrance for outbound travel.
+        // A person opening the inner door themselves is outbound, not a follow-up cleanse.
         if (doorComp.State is DoorState.Open or DoorState.Opening)
         {
             ent.Comp.EntranceDoor = door;
+            if (innerDoor == door)
+                ent.Comp.AwaitingInnerResterilize = false;
             Dirty(ent);
             return;
         }
@@ -164,13 +169,14 @@ public sealed class SterilizationAirlockSystem : EntitySystem
         if (doorComp.State != DoorState.Closed)
             return;
 
-        var innerDoor = GetInnerDoor(ent.Comp);
-
         // Closing the inner door always starts a sterilization cycle. Opening the lab-side
         // door can contaminate the chamber; it must be sterilized before the outer door opens.
         if (innerDoor == door)
         {
             ent.Comp.EntranceDoor = door;
+            // Follow-up cleanse after inbound entry: sterilize, but do not reopen the outer door.
+            ent.Comp.OpenExitAfterSterilization = !ent.Comp.AwaitingInnerResterilize;
+            ent.Comp.AwaitingInnerResterilize = false;
             Dirty(ent);
             TryBeginCycle(ent);
             return;
@@ -178,7 +184,11 @@ public sealed class SterilizationAirlockSystem : EntitySystem
 
         // Outer door still starts a cycle when it was the remembered entrance.
         if (ent.Comp.EntranceDoor == door)
+        {
+            ent.Comp.OpenExitAfterSterilization = true;
+            Dirty(ent);
             TryBeginCycle(ent);
+        }
     }
 
     private void OnBeforeLockedDoorOpened(Entity<SterilizationDoorLockComponent> ent, ref BeforeDoorOpenedEvent args)
@@ -340,6 +350,14 @@ public sealed class SterilizationAirlockSystem : EntitySystem
         SterilizeChamber(ent, xform, tiles);
         ClearFog(ent);
 
+        // Follow-up cleanse after inbound transit: keep both doors sealed; do not reopen outer.
+        if (!ent.Comp.OpenExitAfterSterilization)
+        {
+            FinishSealedIdle(ent);
+            _popup.PopupEntity(Loc.GetString("sol-sterilizer-complete"), ent);
+            return;
+        }
+
         if (ent.Comp.ExitDoor is not { } exit || !Exists(exit))
         {
             Interrupt(ent, "sol-sterilizer-interrupted");
@@ -355,6 +373,10 @@ public sealed class SterilizationAirlockSystem : EntitySystem
 
         // Release only the exit bolt so the chamber can open after sterilization.
         TrySetDoorBolted(exit, false);
+
+        // Opening the inner door as the cycle exit means the next inner close is a follow-up cleanse.
+        if (exit == GetInnerDoor(ent.Comp))
+            ent.Comp.AwaitingInnerResterilize = true;
 
         ent.Comp.Phase = SterilizationControllerPhase.OpeningExit;
         ent.Comp.PhaseEndsAt = _timing.CurTime + ent.Comp.ClosingTimeout;
@@ -622,6 +644,29 @@ public sealed class SterilizationAirlockSystem : EntitySystem
         ent.Comp.PhaseEndsAt = TimeSpan.Zero;
         ent.Comp.EntranceDoor = null;
         ent.Comp.ExitDoor = null;
+        ent.Comp.OpenExitAfterSterilization = true;
+        Dirty(ent);
+        SetVisual(ent, SterilizationControllerVisualState.Off);
+    }
+
+    /// <summary>
+    /// Ends a follow-up cleanse with both doors closed and bolted so the outer door is not reopened.
+    /// </summary>
+    private void FinishSealedIdle(Entity<SterilizationAirlockControllerComponent> ent)
+    {
+        if (ent.Comp.DoorA is { } doorA && Exists(doorA))
+            RemComp<SterilizationDoorLockComponent>(doorA);
+        if (ent.Comp.DoorB is { } doorB && Exists(doorB))
+            RemComp<SterilizationDoorLockComponent>(doorB);
+
+        EnsureBothDoorsBolted(ent);
+
+        ent.Comp.Phase = SterilizationControllerPhase.Idle;
+        ent.Comp.PhaseEndsAt = TimeSpan.Zero;
+        ent.Comp.EntranceDoor = null;
+        ent.Comp.ExitDoor = null;
+        ent.Comp.AwaitingInnerResterilize = false;
+        ent.Comp.OpenExitAfterSterilization = true;
         Dirty(ent);
         SetVisual(ent, SterilizationControllerVisualState.Off);
     }

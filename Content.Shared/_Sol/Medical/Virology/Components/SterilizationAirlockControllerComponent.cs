@@ -58,6 +58,20 @@ public sealed partial class SterilizationAirlockControllerComponent : Component
     [DataField, AutoNetworkedField]
     public bool QuarantineLocked;
 
+    /// <summary>
+    /// After an inbound cycle opens the inner door, the next inner close is a follow-up
+    /// cleanse that must not reopen the outer door.
+    /// </summary>
+    [DataField, AutoNetworkedField]
+    public bool AwaitingInnerResterilize;
+
+    /// <summary>
+    /// Whether the current cycle should open the opposite door after sterilization.
+    /// False for follow-up cleanses after inbound entry through the outer door.
+    /// </summary>
+    [DataField, AutoNetworkedField]
+    public bool OpenExitAfterSterilization = true;
+
     [ViewVariables]
     public List<EntityUid> ActiveFog = new();
 }
