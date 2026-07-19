@@ -71,6 +71,7 @@
   - bioterror
   name: sol-gamemode-virology-title
   description: sol-gamemode-virology-desc
+  minPlayers: 5
   showInVote: true
   supportedMaps: VirologyMapPool
   rules:
