@@ -176,7 +176,7 @@ The health analyzer displays structured allergies recorded on the character prof
 
 - Powered active station vent scrubbers remove nearby airborne pathogen load.
 
-- Paired virology airlocks linked to a sterilization chamber controller run an automatic cycle when the entrance door closes: both doors lock, harmless white fog fills only the chamber tiles, the fog fades, chamber air/surfaces/tools/gloves are sterilized, then the opposite door opens.
+- Paired virology airlocks linked to a sterilization chamber controller run an automatic cycle when the entrance closes: both doors bolt, harmless white fog fills only the chamber tiles, the fog fades, chamber air/surfaces/tools/gloves are sterilized, then the opposite door opens. Closing the inner lab-side door always starts another sterilization cycle so contaminated chamber air cannot leak outward.
 
 - Losing power, unlinking, or door failure aborts the cycle without sterilizing.
 

@@ -18,7 +18,8 @@ namespace Content.Server._Sol.Medical.Virology;
 
 /// <summary>
 /// Automatic paired-airlock sterilization chamber controlled by a floor vent entity.
-/// Cycle: entrance closes -> both doors lock/close -> fog -> fade -> sterilize -> open exit.
+/// Cycle: entrance closes -> both doors close -> bolt both -> fog -> fade -> sterilize -> open exit.
+/// Both doors remain bolted for the entire sterilization sequence.
 /// </summary>
 public sealed class SterilizationAirlockSystem : EntitySystem
 {
@@ -69,10 +70,12 @@ public sealed class SterilizationAirlockSystem : EntitySystem
                     UpdateClosing((uid, controller));
                     break;
                 case SterilizationControllerPhase.Fogging:
+                    EnsureBothDoorsBolted((uid, controller));
                     if (_timing.CurTime >= controller.PhaseEndsAt)
                         BeginFading((uid, controller));
                     break;
                 case SterilizationControllerPhase.Fading:
+                    EnsureBothDoorsBolted((uid, controller));
                     if (_timing.CurTime >= controller.PhaseEndsAt)
                         CompleteSterilization((uid, controller), xform);
                     break;
@@ -134,21 +137,48 @@ public sealed class SterilizationAirlockSystem : EntitySystem
         if (!TryComp<DoorComponent>(door, out var doorComp))
             return;
 
-        // Only track entrance while idle so exit-opening does not rewrite transit state.
-        if (ent.Comp.Phase == SterilizationControllerPhase.Idle &&
-            doorComp.State is DoorState.Open or DoorState.Opening)
+        var signalState = SignalState.Momentary;
+        args.Data?.TryGetValue(DeviceNetworkConstants.LogicState, out signalState);
+        var isOpen = signalState == SignalState.Momentary
+            ? doorComp.State != DoorState.Closed
+            : signalState == SignalState.High;
+
+        // Paired open/bolt interlock only applies outside an active sterilization sequence.
+        if (ent.Comp.Phase is SterilizationControllerPhase.Idle or SterilizationControllerPhase.Fault
+            or SterilizationControllerPhase.OpeningExit)
+        {
+            UpdateDoorInterlock(ent, door, isOpen);
+        }
+
+        if (ent.Comp.Phase != SterilizationControllerPhase.Idle)
+            return;
+
+        // Track which door was opened as the entrance for outbound travel.
+        if (doorComp.State is DoorState.Open or DoorState.Opening)
         {
             ent.Comp.EntranceDoor = door;
             Dirty(ent);
             return;
         }
 
-        if (doorComp.State == DoorState.Closed &&
-            ent.Comp.Phase == SterilizationControllerPhase.Idle &&
-            ent.Comp.EntranceDoor == door)
+        if (doorComp.State != DoorState.Closed)
+            return;
+
+        var innerDoor = GetInnerDoor(ent.Comp);
+
+        // Closing the inner door always starts a sterilization cycle. Opening the lab-side
+        // door can contaminate the chamber; it must be sterilized before the outer door opens.
+        if (innerDoor == door)
         {
+            ent.Comp.EntranceDoor = door;
+            Dirty(ent);
             TryBeginCycle(ent);
+            return;
         }
+
+        // Outer door still starts a cycle when it was the remembered entrance.
+        if (ent.Comp.EntranceDoor == door)
+            TryBeginCycle(ent);
     }
 
     private void OnBeforeLockedDoorOpened(Entity<SterilizationDoorLockComponent> ent, ref BeforeDoorOpenedEvent args)
@@ -220,6 +250,13 @@ public sealed class SterilizationAirlockSystem : EntitySystem
 
         if (doorAComp.State == DoorState.Closed && doorBComp.State == DoorState.Closed)
         {
+            // Cycle closed: bolt both doors, then sterilize under lock.
+            if (!EnsureBothDoorsBolted(ent))
+            {
+                Interrupt(ent, "sol-sterilizer-interrupted");
+                return;
+            }
+
             BeginFogging(ent);
             return;
         }
@@ -233,6 +270,12 @@ public sealed class SterilizationAirlockSystem : EntitySystem
         if (!ValidateChamberGeometry(ent, ent.Comp.DoorA!.Value, ent.Comp.DoorB!.Value, out var tiles))
         {
             Interrupt(ent, "sol-sterilizer-invalid-geometry");
+            return;
+        }
+
+        if (!EnsureBothDoorsBolted(ent))
+        {
+            Interrupt(ent, "sol-sterilizer-interrupted");
             return;
         }
 
@@ -287,6 +330,13 @@ public sealed class SterilizationAirlockSystem : EntitySystem
             return;
         }
 
+        // Sterilization only runs while both doors are bolted shut.
+        if (!EnsureBothDoorsBolted(ent))
+        {
+            Interrupt(ent, "sol-sterilizer-interrupted");
+            return;
+        }
+
         SterilizeChamber(ent, xform, tiles);
         ClearFog(ent);
 
@@ -298,7 +348,13 @@ public sealed class SterilizationAirlockSystem : EntitySystem
 
         RemComp<SterilizationDoorLockComponent>(exit);
         if (ent.Comp.EntranceDoor is { } entrance && Exists(entrance))
+        {
             EnsureComp<SterilizationDoorLockComponent>(entrance);
+            TrySetDoorBolted(entrance, true);
+        }
+
+        // Release only the exit bolt so the chamber can open after sterilization.
+        TrySetDoorBolted(exit, false);
 
         ent.Comp.Phase = SterilizationControllerPhase.OpeningExit;
         ent.Comp.PhaseEndsAt = _timing.CurTime + ent.Comp.ClosingTimeout;
@@ -383,6 +439,53 @@ public sealed class SterilizationAirlockSystem : EntitySystem
         }
 
         Dirty(ent);
+    }
+
+    private void UpdateDoorInterlock(
+        Entity<SterilizationAirlockControllerComponent> ent,
+        EntityUid changedDoor,
+        bool isOpen)
+    {
+        // Never release bolts while a sterilization sequence is sealing the chamber.
+        if (ent.Comp.Phase is SterilizationControllerPhase.Closing
+            or SterilizationControllerPhase.Fogging
+            or SterilizationControllerPhase.Fading)
+        {
+            EnsureBothDoorsBolted(ent);
+            return;
+        }
+
+        var otherDoor = changedDoor == ent.Comp.DoorA
+            ? ent.Comp.DoorB
+            : changedDoor == ent.Comp.DoorB
+                ? ent.Comp.DoorA
+                : null;
+
+        if (otherDoor is not { } other || !TryComp<DoorBoltComponent>(other, out var bolts))
+            return;
+
+        var quarantineRequiresBolt = ent.Comp.QuarantineLocked && other == GetQuarantineDoor(ent.Comp);
+        var shouldBolt = isOpen || quarantineRequiresBolt;
+        if (bolts.BoltsDown != shouldBolt)
+            _doors.TrySetBoltDown((other, bolts), shouldBolt);
+    }
+
+    private bool EnsureBothDoorsBolted(Entity<SterilizationAirlockControllerComponent> ent)
+    {
+        var boltedA = ent.Comp.DoorA is { } doorA && Exists(doorA) && TrySetDoorBolted(doorA, true);
+        var boltedB = ent.Comp.DoorB is { } doorB && Exists(doorB) && TrySetDoorBolted(doorB, true);
+        return boltedA && boltedB;
+    }
+
+    private bool TrySetDoorBolted(EntityUid door, bool bolted)
+    {
+        if (!TryComp<DoorBoltComponent>(door, out var bolts))
+            return false;
+
+        if (bolts.BoltsDown == bolted)
+            return true;
+
+        return _doors.TrySetBoltDown((door, bolts), bolted);
     }
 
     private void SetQuarantineLock(Entity<SterilizationAirlockControllerComponent> ent, bool locked)
@@ -477,6 +580,8 @@ public sealed class SterilizationAirlockSystem : EntitySystem
         if (ent.Comp.DoorB is { } doorB && Exists(doorB))
             RemComp<SterilizationDoorLockComponent>(doorB);
 
+        ReleaseCycleBolts(ent);
+
         var entrance = ent.Comp.EntranceDoor;
         ent.Comp.Phase = SterilizationControllerPhase.Idle;
         ent.Comp.PhaseEndsAt = TimeSpan.Zero;
@@ -493,6 +598,7 @@ public sealed class SterilizationAirlockSystem : EntitySystem
             (!ent.Comp.QuarantineLocked || entranceDoor != GetQuarantineDoor(ent.Comp)) &&
             (!ent.Comp.RequiresPower || _power.IsPowered(ent.Owner)))
         {
+            TrySetDoorBolted(entranceDoor, false);
             _doors.TryOpen(entranceDoor);
         }
     }
@@ -504,6 +610,14 @@ public sealed class SterilizationAirlockSystem : EntitySystem
         if (ent.Comp.DoorB is { } doorB && Exists(doorB))
             RemComp<SterilizationDoorLockComponent>(doorB);
 
+        // Exit stays open; keep the opposite door bolted via normal interlock behavior.
+        if (ent.Comp.ExitDoor is { } exit && Exists(exit))
+            UpdateDoorInterlock(ent, exit, isOpen: true);
+
+        // Preserve quarantine bolting on the outer door if still engaged.
+        if (ent.Comp.QuarantineLocked && GetQuarantineDoor(ent.Comp) is { } outer)
+            TrySetDoorBolted(outer, true);
+
         ent.Comp.Phase = SterilizationControllerPhase.Idle;
         ent.Comp.PhaseEndsAt = TimeSpan.Zero;
         ent.Comp.EntranceDoor = null;
@@ -512,11 +626,33 @@ public sealed class SterilizationAirlockSystem : EntitySystem
         SetVisual(ent, SterilizationControllerVisualState.Off);
     }
 
+    private void ReleaseCycleBolts(Entity<SterilizationAirlockControllerComponent> ent)
+    {
+        if (ent.Comp.DoorA is { } doorA && Exists(doorA))
+        {
+            var keepBolted = ent.Comp.QuarantineLocked && doorA == GetQuarantineDoor(ent.Comp);
+            TrySetDoorBolted(doorA, keepBolted);
+        }
+
+        if (ent.Comp.DoorB is { } doorB && Exists(doorB))
+        {
+            var keepBolted = ent.Comp.QuarantineLocked && doorB == GetQuarantineDoor(ent.Comp);
+            TrySetDoorBolted(doorB, keepBolted);
+        }
+    }
+
     private static EntityUid? GetQuarantineDoor(SterilizationAirlockControllerComponent component)
     {
         return component.QuarantineDoor == SterilizationControllerDoor.A
             ? component.DoorA
             : component.DoorB;
+    }
+
+    private static EntityUid? GetInnerDoor(SterilizationAirlockControllerComponent component)
+    {
+        return component.QuarantineDoor == SterilizationControllerDoor.A
+            ? component.DoorB
+            : component.DoorA;
     }
 
     private void ClearFog(Entity<SterilizationAirlockControllerComponent> ent)

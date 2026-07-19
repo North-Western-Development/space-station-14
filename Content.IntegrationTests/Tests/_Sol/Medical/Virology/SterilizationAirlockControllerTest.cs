@@ -74,6 +74,8 @@ public sealed class SterilizationAirlockControllerTest
 
             doors.SetState(doorA, DoorState.Closed);
             doors.SetState(doorB, DoorState.Closed);
+            entMan.GetComponent<ApcPowerReceiverComponent>(doorA).Powered = true;
+            entMan.GetComponent<ApcPowerReceiverComponent>(doorB).Powered = true;
 
             var controllerComp = entMan.GetComponent<SterilizationAirlockControllerComponent>(controller);
             controllerComp.DoorA = doorA;
@@ -106,9 +108,20 @@ public sealed class SterilizationAirlockControllerTest
             Assert.That(entMan.HasComponent<SterilizationDoorLockComponent>(doorA), Is.True);
             Assert.That(entMan.HasComponent<SterilizationDoorLockComponent>(doorB), Is.True);
 
+            // Both doors closed: bolt, then sterilize under lock.
+            sterilizer.Update(0.1f);
+            Assert.That(controllerComp.Phase, Is.EqualTo(SterilizationControllerPhase.Fogging));
+            Assert.That(entMan.GetComponent<DoorBoltComponent>(doorA).BoltsDown, Is.True);
+            Assert.That(entMan.GetComponent<DoorBoltComponent>(doorB).BoltsDown, Is.True);
+
             controllerComp.Phase = SterilizationControllerPhase.Fading;
             controllerComp.PhaseEndsAt = timing.CurTime;
             sterilizer.Update(0.1f);
+
+            Assert.That(entMan.GetComponent<DoorBoltComponent>(doorA).BoltsDown, Is.True,
+                "Entrance remains bolted through and after sterilization");
+            Assert.That(entMan.GetComponent<DoorBoltComponent>(doorB).BoltsDown, Is.False,
+                "Exit unbolts only after sterilization completes");
 
             doors.SetState(doorB, DoorState.Open);
             controllerComp = entMan.GetComponent<SterilizationAirlockControllerComponent>(controller);
@@ -126,6 +139,8 @@ public sealed class SterilizationAirlockControllerTest
             Assert.That(entMan.GetComponent<SurfaceContaminationComponent>(tool).Contaminants, Is.Empty);
             Assert.That(entMan.HasComponent<SterilizationDoorLockComponent>(doorA), Is.False);
             Assert.That(entMan.HasComponent<SterilizationDoorLockComponent>(doorB), Is.False);
+            Assert.That(entMan.GetComponent<DoorBoltComponent>(doorA).BoltsDown, Is.True,
+                "Opposite door stays bolted while the exit remains open");
         });
 
         await pair.CleanReturnAsync();
@@ -139,6 +154,7 @@ public sealed class SterilizationAirlockControllerTest
         var testMap = await pair.CreateTestMap();
         var entMan = server.ResolveDependency<IEntityManager>();
         var map = entMan.System<SharedMapSystem>();
+        var doors = entMan.System<SharedDoorSystem>();
         var sterilizer = entMan.System<SterilizationAirlockSystem>();
 
         await server.WaitAssertion(() =>
@@ -160,9 +176,31 @@ public sealed class SterilizationAirlockControllerTest
             var controllerComp = entMan.GetComponent<SterilizationAirlockControllerComponent>(controller);
             controllerComp.DoorA = doorA;
             controllerComp.DoorB = doorB;
-            controllerComp.EntranceDoor = doorA;
             controllerComp.RequiresPower = false;
             entMan.GetComponent<ApcPowerReceiverComponent>(doorA).Powered = true;
+            entMan.GetComponent<ApcPowerReceiverComponent>(doorB).Powered = true;
+
+            var doorOpen = new NetworkPayload
+            {
+                [DeviceNetworkConstants.LogicState] = SignalState.High,
+            };
+            var doorOpenSignal = new SignalReceivedEvent(
+                SterilizationAirlockSystem.DoorAPort,
+                doorA,
+                doorOpen);
+            entMan.EventBus.RaiseLocalEvent(controller, ref doorOpenSignal);
+            Assert.That(entMan.GetComponent<DoorBoltComponent>(doorB).BoltsDown, Is.True);
+
+            var doorClosed = new NetworkPayload
+            {
+                [DeviceNetworkConstants.LogicState] = SignalState.Low,
+            };
+            var doorClosedSignal = new SignalReceivedEvent(
+                SterilizationAirlockSystem.DoorAPort,
+                doorA,
+                doorClosed);
+            entMan.EventBus.RaiseLocalEvent(controller, ref doorClosedSignal);
+            Assert.That(entMan.GetComponent<DoorBoltComponent>(doorB).BoltsDown, Is.False);
 
             var quarantineOn = new NetworkPayload
             {
@@ -186,12 +224,23 @@ public sealed class SterilizationAirlockControllerTest
             Assert.That(controllerComp.QuarantineLocked, Is.False);
             Assert.That(entMan.GetComponent<DoorBoltComponent>(doorA).BoltsDown, Is.False);
 
-            Assert.That(sterilizer.TryBeginCycle((controller, controllerComp)), Is.True);
-
-            Assert.That(entMan.HasComponent<SterilizationDoorLockComponent>(doorA), Is.True);
-            var before = new BeforeDoorOpenedEvent();
-            entMan.EventBus.RaiseLocalEvent(doorA, before);
-            Assert.That(before.Cancelled, Is.True);
+            // Closing the inner door (Door B when quarantine is Door A) always starts a cycle,
+            // even if EntranceDoor was cleared after a previous transit.
+            controllerComp.EntranceDoor = null;
+            doors.SetState(doorA, DoorState.Closed);
+            doors.SetState(doorB, DoorState.Closed);
+            var innerClose = new NetworkPayload
+            {
+                [DeviceNetworkConstants.LogicState] = SignalState.Low,
+            };
+            var innerCloseSignal = new SignalReceivedEvent(
+                SterilizationAirlockSystem.DoorBPort,
+                doorB,
+                innerClose);
+            entMan.EventBus.RaiseLocalEvent(controller, ref innerCloseSignal);
+            Assert.That(controllerComp.EntranceDoor, Is.EqualTo(doorB));
+            Assert.That(controllerComp.Phase, Is.EqualTo(SterilizationControllerPhase.Closing));
+            Assert.That(controllerComp.ExitDoor, Is.EqualTo(doorA));
 
             controllerComp.RequiresPower = true;
             Assert.That(entMan.TryGetComponent(controller, out ApcPowerReceiverComponent power), Is.True);
