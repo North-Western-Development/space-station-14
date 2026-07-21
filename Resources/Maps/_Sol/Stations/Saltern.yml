@@ -305,7 +305,7 @@ entities:
     - type: Fixtures
       fixtures: {}
     - type: BecomesStation
-      id: StarlightSaltern
+      id: SolSaltern
     - type: GridAtmosphere
       version: 2
       data:
