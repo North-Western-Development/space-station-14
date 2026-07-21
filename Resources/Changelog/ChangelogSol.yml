@@ -289,4 +289,13 @@ Entries:
   id: 570001
   time: '2026-07-20T12:38:26.000000+00:00'
   url: https://github.com/North-Western-Development/space-station-14/pull/57
+- author: Beans
+  changes:
+  - message: Fixed SMES power loop on Saltern.
+    type: Fix
+  - message: Placed missing LV cables in places that it was missing.
+    type: Fix
+  id: 670001
+  time: '2026-07-21T12:53:35.000000+00:00'
+  url: https://github.com/North-Western-Development/space-station-14/pull/67
 
