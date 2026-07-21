@@ -3,9 +3,9 @@ meta:
   category: Map
   engineVersion: 283.1.0
   forkId: sol-testing
-  forkVersion: f2cc5d9b89675f1c9a2ac331f53df3e9b6a2318b
-  time: 07/20/2026 21:59:56
-  entityCount: 3913
+  forkVersion: 5d71498897441484c92346000c4c893614268ff3
+  time: 07/21/2026 10:44:37
+  entityCount: 3924
 maps:
 - 1
 grids:
@@ -7356,6 +7356,61 @@ entities:
     - type: Transform
       parent: 2
       pos: 14.5,16.5
+  - uid: 3913
+    components:
+    - type: Transform
+      parent: 2
+      pos: -15.5,23.5
+  - uid: 3915
+    components:
+    - type: Transform
+      parent: 2
+      pos: 12.5,17.5
+  - uid: 3916
+    components:
+    - type: Transform
+      parent: 2
+      pos: 12.5,18.5
+  - uid: 3917
+    components:
+    - type: Transform
+      parent: 2
+      pos: 12.5,19.5
+  - uid: 3918
+    components:
+    - type: Transform
+      parent: 2
+      pos: 12.5,20.5
+  - uid: 3919
+    components:
+    - type: Transform
+      parent: 2
+      pos: 12.5,21.5
+  - uid: 3920
+    components:
+    - type: Transform
+      parent: 2
+      pos: 0.5,34.5
+  - uid: 3921
+    components:
+    - type: Transform
+      parent: 2
+      pos: 0.5,35.5
+  - uid: 3922
+    components:
+    - type: Transform
+      parent: 2
+      pos: 0.5,35.5
+  - uid: 3923
+    components:
+    - type: Transform
+      parent: 2
+      pos: 1.5,35.5
+  - uid: 3924
+    components:
+    - type: Transform
+      parent: 2
+      pos: -15.5,24.5
 - proto: CableHV
   entities:
   - uid: 136
