@@ -4,7 +4,7 @@ meta:
   engineVersion: 283.1.0
   forkId: sol-testing
   forkVersion: f2cc5d9b89675f1c9a2ac331f53df3e9b6a2318b
-  time: 07/21/2026 08:10:54
+  time: 07/21/2026 08:22:45
   entityCount: 14467
 maps:
 - 1
@@ -5700,6 +5700,11 @@ entities:
             2522: -2,14
             2523: -1,14
             2524: 0,14
+        - node:
+            id: quarterswwhite
+            color: '#FF8F63FF'
+          decals:
+            2788: 48,1
         - node:
             zIndex: 1
             id: quarterswwhite
@@ -64730,7 +64735,7 @@ entities:
       pos: 27.5,-24.5
     - type: Door
       state: Opening
-      secondsUntilStateChange: -6781.3994
+      secondsUntilStateChange: -7490.809
   - uid: 14377
     components:
     - type: Transform
