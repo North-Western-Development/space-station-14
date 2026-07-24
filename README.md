@@ -14,9 +14,7 @@
 
 </div>
 
-Sol's Descendants is an open source project aimed at creating unique mechanics and a pleasant game atmosphere in the game Space Station 14,
-
-a game about survival on a space station where there are constant confrontations between the crew and antagonists created to prevent the crew from achieving their goals.
+Sol's Descendants is an open source project aimed at creating unique mechanics and a pleasant game atmosphere in the game Space Station 14, a game about survival on a space station where there are constant confrontations between the crew and antagonists created to prevent the crew from achieving their goals.
 
 # Downstream Notice
 Sol's Descendants is a downstream of [Starlight](https://github.com/ss14Starlight/space-station-14)
