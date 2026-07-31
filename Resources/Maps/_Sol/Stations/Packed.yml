@@ -3,9 +3,9 @@ meta:
   category: Map
   engineVersion: 283.1.0
   forkId: sol-testing
-  forkVersion: b627151299ffc8f620f69ece7656e676329eb5ef
-  time: 07/19/2026 09:02:58
-  entityCount: 17032
+  forkVersion: 89f8ff728b4e79229590f926ee9e483d995bcfb8
+  time: 07/27/2026 17:30:10
+  entityCount: 17033
 maps:
 - 1
 grids:
@@ -14508,14 +14508,6 @@ entities:
       parent: 2
       rot: 1.5707963267948966 rad
       pos: 29.5,20.5
-  - uid: 868
-    components:
-    - type: Transform
-      parent: 2
-      rot: 1.5707963267948966 rad
-      pos: 29.5,-6.5
-    - type: SpamEmitSound
-      enabled: False
 - proto: Bonfire
   entities:
   - uid: 869
@@ -54240,14 +54232,6 @@ entities:
     - type: Transform
       parent: 2
       pos: 53.476757,-45.51127
-- proto: FoodCartCold
-  entities:
-  - uid: 8069
-    components:
-    - type: Transform
-      parent: 2
-      rot: 1.5707963267948966 rad
-      pos: 29.5,-12.5
 - proto: FoodCondimentBottleEnzyme
   entities:
   - uid: 8070
@@ -77803,6 +77787,13 @@ entities:
     - type: Transform
       parent: 2
       pos: 41.5,-4.5
+- proto: IceCreamMaker
+  entities:
+  - uid: 17033
+    components:
+    - type: Transform
+      parent: 2
+      pos: 34.5,-12.5
 - proto: IDComputerCircuitboard
   entities:
   - uid: 11452
@@ -95696,6 +95687,12 @@ entities:
       parent: 2
       rot: 3.141592653589793 rad
       pos: 53.5,-46.5
+  - uid: 14287
+    components:
+    - type: Transform
+      parent: 2
+      rot: -1.5707963267948966 rad
+      pos: 34.5,-12.5
 - proto: TableCounterMetal
   entities:
   - uid: 14050
@@ -97226,11 +97223,11 @@ entities:
       pos: 29.5,-9.5
 - proto: VendingMachineChefvend
   entities:
-  - uid: 14287
+  - uid: 8069
     components:
     - type: Transform
       parent: 2
-      pos: 34.5,-12.5
+      pos: 29.5,-12.5
 - proto: VendingMachineChemDrobe
   entities:
   - uid: 14288
@@ -97425,6 +97422,13 @@ entities:
     - type: Transform
       parent: 2
       pos: 44.5,-9.5
+- proto: VendingMachineIceCream
+  entities:
+  - uid: 868
+    components:
+    - type: Transform
+      parent: 2
+      pos: 29.5,-6.5
 - proto: VendingMachineJaniDrobe
   entities:
   - uid: 14315

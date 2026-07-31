@@ -3,9 +3,9 @@ meta:
   category: Map
   engineVersion: 283.1.0
   forkId: sol-testing
-  forkVersion: 5d71498897441484c92346000c4c893614268ff3
-  time: 07/21/2026 10:44:37
-  entityCount: 3924
+  forkVersion: 89f8ff728b4e79229590f926ee9e483d995bcfb8
+  time: 07/27/2026 17:28:15
+  entityCount: 3925
 maps:
 - 1
 grids:
@@ -20315,6 +20315,13 @@ entities:
       parent: 2
       rot: 3.141592653589793 rad
       pos: -11.5,23.5
+- proto: IceCreamMaker
+  entities:
+  - uid: 3925
+    components:
+    - type: Transform
+      parent: 2
+      pos: -0.5,-3.5
 - proto: IngotGold
   entities:
   - uid: 2760
