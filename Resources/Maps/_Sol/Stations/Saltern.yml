@@ -3,9 +3,9 @@ meta:
   category: Map
   engineVersion: 283.1.0
   forkId: sol-testing
-  forkVersion: 5d71498897441484c92346000c4c893614268ff3
-  time: 07/21/2026 10:44:29
-  entityCount: 14449
+  forkVersion: 89f8ff728b4e79229590f926ee9e483d995bcfb8
+  time: 07/27/2026 17:28:31
+  entityCount: 14448
 maps:
 - 1
 grids:
@@ -38252,12 +38252,6 @@ entities:
       parent: 2
       rot: -1.5707963267948966 rad
       pos: -7.5,3.5
-  - uid: 5779
-    components:
-    - type: Transform
-      parent: 2
-      rot: -1.5707963267948966 rad
-      pos: -11.5,3.5
   - uid: 5780
     components:
     - type: Transform
@@ -38275,6 +38269,12 @@ entities:
       pos: -15.5,-25.5
 - proto: DisposalPipe
   entities:
+  - uid: 2660
+    components:
+    - type: Transform
+      parent: 2
+      rot: -1.5707963267948966 rad
+      pos: -11.5,3.5
   - uid: 5760
     components:
     - type: Transform
@@ -38703,12 +38703,6 @@ entities:
       parent: 2
       rot: 3.141592697301183 rad
       pos: 3.5,-9.5
-  - uid: 5856
-    components:
-    - type: Transform
-      parent: 2
-      rot: 3.141592653589793 rad
-      pos: -11.5,2.5
   - uid: 5857
     components:
     - type: Transform
@@ -40214,12 +40208,6 @@ entities:
       parent: 2
       rot: 3.141592653589793 rad
       pos: 37.5,2.5
-  - uid: 6120
-    components:
-    - type: Transform
-      parent: 2
-      rot: 3.141592653589793 rad
-      pos: -11.5,1.5
   - uid: 6121
     components:
     - type: Transform
@@ -40436,11 +40424,6 @@ entities:
     - type: Transform
       parent: 2
       pos: 29.5,6.5
-  - uid: 6159
-    components:
-    - type: Transform
-      parent: 2
-      pos: -11.5,1.5
   - uid: 6160
     components:
     - type: Transform
@@ -64645,7 +64628,7 @@ entities:
       pos: 27.5,-24.5
     - type: Door
       state: Opening
-      secondsUntilStateChange: -7549.671
+      secondsUntilStateChange: -7846.6704
   - uid: 14377
     components:
     - type: Transform
@@ -64810,6 +64793,13 @@ entities:
     - type: Transform
       parent: 2
       pos: -2.7028284,-46.749386
+- proto: IceCreamMaker
+  entities:
+  - uid: 2922
+    components:
+    - type: Transform
+      parent: 2
+      pos: -11.5,1.5
 - proto: Igniter
   entities:
   - uid: 9625
@@ -80220,6 +80210,12 @@ entities:
       pos: 1.1444027,-35.422237
 - proto: Table
   entities:
+  - uid: 2918
+    components:
+    - type: Transform
+      parent: 2
+      rot: -1.5707963267948966 rad
+      pos: -11.5,1.5
   - uid: 5403
     components:
     - type: Transform

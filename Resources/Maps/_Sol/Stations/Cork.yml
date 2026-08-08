@@ -3,9 +3,9 @@ meta:
   category: Map
   engineVersion: 283.1.0
   forkId: sol-testing
-  forkVersion: f2cc5d9b89675f1c9a2ac331f53df3e9b6a2318b
-  time: 07/20/2026 16:13:01
-  entityCount: 10563
+  forkVersion: 89f8ff728b4e79229590f926ee9e483d995bcfb8
+  time: 07/27/2026 17:31:07
+  entityCount: 10565
 maps:
 - 1
 grids:
@@ -50786,6 +50786,13 @@ entities:
       parent: 2
       rot: 1.5707963267948966 rad
       pos: -3.5,21.5
+- proto: IceCreamMakerFlatpack
+  entities:
+  - uid: 7251
+    components:
+    - type: Transform
+      parent: 2
+      pos: 12.007249,-10.218327
 - proto: IceCrust
   entities:
   - uid: 6034
@@ -65328,6 +65335,13 @@ entities:
     - type: Transform
       parent: 2
       pos: 10.5,-12.5
+- proto: VendingMachineIceCream
+  entities:
+  - uid: 7248
+    components:
+    - type: Transform
+      parent: 2
+      pos: 6.5,-6.5
 - proto: VendingMachineJaniDrobe
   entities:
   - uid: 7818
